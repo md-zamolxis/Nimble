@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{10D27168-EFF9-42EC-8FE4-B600B088C59D}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nimble.Server.Iis</RootNamespace>
+    <AssemblyName>Nimble.Server.Iis</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TargetFrameworkProfile />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Hangfire.Core, Version=1.6.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Nimble.Binary\External.Library\Hangfire.Core.1.6.8\lib\net45\Hangfire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\..\Nimble.Binary\External.Library\Microsoft.Owin.Host.SystemWeb.3.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Nimble.Binary\External.Library\Newtonsoft.Json.5.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ClientAccessPolicy.xml" />
+    <Content Include="CrossDomain.xml" />
+    <Content Include="Framework\Common.svc" />
+    <Content Include="Framework\Multicurrency.svc" />
+    <Content Include="Framework\Notification.svc" />
+    <Content Include="Framework\Security.svc" />
+    <Content Include="Framework\Owner.svc" />
+    <Content Include="Framework\Multilanguage.svc" />
+    <Content Include="Framework\Maintenance.svc" />
+    <Content Include="Framework\Geolocation.svc" />
+    <Content Include="Global.asax" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extension\ExceptionBehaviorExtensionElement.cs" />
+    <Compile Include="Extension\ExceptionErrorHandler.cs" />
+    <Compile Include="Extension\ExceptionServiceBehavior.cs" />
+    <Compile Include="Extension\JsonBehaviorExtensionElement.cs" />
+    <Compile Include="Extension\JsonErrorHandler.cs" />
+    <Compile Include="Extension\JsonWebHttpBehavior.cs" />
+    <Compile Include="Framework\Common.svc.cs">
+      <DependentUpon>Common.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Interface\INotification.cs" />
+    <Compile Include="Framework\Multicurrency.svc.cs">
+      <DependentUpon>Multicurrency.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Interface\IMulticurrency.cs" />
+    <Compile Include="Framework\Notification.svc.cs">
+      <DependentUpon>Notification.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Security.svc.cs">
+      <DependentUpon>Security.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Interface\ISecurity.cs" />
+    <Compile Include="Framework\Owner.svc.cs">
+      <DependentUpon>Owner.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Interface\IOwner.cs" />
+    <Compile Include="Framework\Multilanguage.svc.cs">
+      <DependentUpon>Multilanguage.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Interface\IMultilanguage.cs" />
+    <Compile Include="Framework\Maintenance.svc.cs">
+      <DependentUpon>Maintenance.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Geolocation.svc.cs">
+      <DependentUpon>Geolocation.svc</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Interface\IMaintenance.cs" />
+    <Compile Include="Framework\Interface\IGeolocation.cs" />
+    <Compile Include="Framework\Interface\ICommon.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Nimble.Business\Nimble.Business.Library\Nimble.Business.Library.csproj">
+      <Project>{6310CCAD-B302-467A-9F11-560A899A699E}</Project>
+      <Name>Nimble.Business.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Nimble.Business\Nimble.Business.Logic\Nimble.Business.Logic.csproj">
+      <Project>{22AE9E37-EF87-414F-9B15-F3049D7D8A92}</Project>
+      <Name>Nimble.Business.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Nimble.Business\Nimble.Business.Engine\Nimble.Business.Engine.csproj">
+      <Project>{C88C49CE-40F2-4987-A29A-7B21D31B8C46}</Project>
+      <Name>Nimble.Business.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Nimble.Business\Nimble.Business.Service\Nimble.Business.Service.csproj">
+      <Project>{21f6a42b-1ad2-48fc-b4ac-450906999a4d}</Project>
+      <Name>Nimble.Business.Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>53673</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost/Nimble.Server.Iis</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

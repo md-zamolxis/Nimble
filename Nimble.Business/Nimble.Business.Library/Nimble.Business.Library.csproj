@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6310CCAD-B302-467A-9F11-560A899A699E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nimble.Business.Library</RootNamespace>
+    <AssemblyName>Nimble.Business.Library</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile136</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\ApplicationSetting.cs" />
+    <Compile Include="Attributes\ConnectionString.cs" />
+    <Compile Include="Attributes\DatabaseMapping.cs" />
+    <Compile Include="Attributes\DatabaseColumn.cs" />
+    <Compile Include="Attributes\DisplayName.cs" />
+    <Compile Include="Attributes\ExternalMapping.cs" />
+    <Compile Include="Attributes\ExternalReference.cs" />
+    <Compile Include="Attributes\FieldCategory.cs" />
+    <Compile Include="Attributes\IisState.cs" />
+    <Compile Include="Attributes\ProfileProperty.cs" />
+    <Compile Include="Attributes\PropertyTypes.cs" />
+    <Compile Include="Attributes\UndefinedValues.cs" />
+    <Compile Include="Common\AmountInterval.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Common\KeyValue.cs" />
+    <Compile Include="Common\DateInterval.cs" />
+    <Compile Include="Common\FaultExceptionDetail.cs" />
+    <Compile Include="Common\Flags.cs" />
+    <Compile Include="Common\GenericCache.cs" />
+    <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\ClientStatic.cs" />
+    <Compile Include="Common\XsdSchema.cs" />
+    <Compile Include="DataTransport\MarkResume.cs" />
+    <Compile Include="Model\Framework\Common\Bond.cs" />
+    <Compile Include="Model\Framework\Common\Filestream.cs" />
+    <Compile Include="Model\Framework\Common\Group.cs" />
+    <Compile Include="Model\Framework\Common\Preset.cs" />
+    <Compile Include="Model\Framework\Common\Profile.cs" />
+    <Compile Include="Model\Framework\Common\Property.cs" />
+    <Compile Include="Configuration\ClientConfiguration.cs" />
+    <Compile Include="Model\Framework\Common\Split.cs" />
+    <Compile Include="Model\Framework\Common\State.cs" />
+    <Compile Include="Configuration\BasicHttpBinding.cs" />
+    <Compile Include="Configuration\Location.cs" />
+    <Compile Include="Configuration\Endpoint.cs" />
+    <Compile Include="Configuration\GenericConfiguration.cs" />
+    <Compile Include="Model\Framework\Common\Hierarchy.cs" />
+    <Compile Include="DataAccess\GenericOutput.cs" />
+    <Compile Include="Model\Framework\Multicurrency\Rate.cs" />
+    <Compile Include="Model\Framework\Multicurrency\Trade.cs" />
+    <Compile Include="Model\Framework\Multicurrency\Currency.cs" />
+    <Compile Include="Model\Framework\Geolocation\Block.cs" />
+    <Compile Include="Model\Framework\Geolocation\Location.cs" />
+    <Compile Include="Model\Framework\Geolocation\Portion.cs" />
+    <Compile Include="Model\Framework\Geolocation\Source.cs" />
+    <Compile Include="Model\Framework\Maintenance\Backup.cs" />
+    <Compile Include="Model\Framework\Maintenance\Batch.cs" />
+    <Compile Include="Model\Framework\Maintenance\Operation.cs" />
+    <Compile Include="Model\Framework\Multilanguage\Resource.cs" />
+    <Compile Include="Model\Framework\Multilanguage\Translation.cs" />
+    <Compile Include="Model\Framework\Notification\Trace.cs" />
+    <Compile Include="Model\Framework\Notification\NotificationType.cs" />
+    <Compile Include="Model\Framework\Notification\Message.cs" />
+    <Compile Include="Model\Framework\Notification\Subscriber.cs" />
+    <Compile Include="Model\Framework\Notification\Publisher.cs" />
+    <Compile Include="Model\Framework\Owner\Branch.cs" />
+    <Compile Include="Model\Framework\Owner\BranchBond.cs" />
+    <Compile Include="Model\Framework\Owner\BranchGroup.cs" />
+    <Compile Include="Model\Framework\Owner\BranchSplit.cs" />
+    <Compile Include="Model\Framework\Owner\Employee.cs" />
+    <Compile Include="Model\Framework\Owner\Layout.cs" />
+    <Compile Include="Model\Framework\Owner\Mark.cs" />
+    <Compile Include="Model\Framework\Owner\Organisation.cs" />
+    <Compile Include="Model\Framework\Owner\Person.cs" />
+    <Compile Include="Model\Framework\Owner\Post.cs" />
+    <Compile Include="Model\Framework\Owner\PostBond.cs" />
+    <Compile Include="Model\Framework\Owner\PostGroup.cs" />
+    <Compile Include="Model\Framework\Owner\PostSplit.cs" />
+    <Compile Include="Model\Framework\Owner\Range.cs" />
+    <Compile Include="Model\Framework\Security\Application.cs" />
+    <Compile Include="Model\Framework\Security\Emplacement.cs" />
+    <Compile Include="Model\Framework\Security\Log.cs" />
+    <Compile Include="Model\Framework\Security\Permission.cs" />
+    <Compile Include="DataAccess\GenericInput.cs" />
+    <Compile Include="Model\Framework\Security\Role.cs" />
+    <Compile Include="Model\Framework\Security\Token.cs" />
+    <Compile Include="Model\Framework\Multilanguage\Culture.cs" />
+    <Compile Include="Model\Framework\Security\User.cs" />
+    <Compile Include="Model\Framework\Security\Account.cs" />
+    <Compile Include="Model\GenericEntity.cs" />
+    <Compile Include="Model\GenericPredicate.cs" />
+    <Compile Include="Common\Enums.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\PropertyDeclarator.cs" />
+    <Compile Include="Reflection\TypeDeclarator.cs" />
+    <Compile Include="Reflection\TypeDeclaratorManager.cs" />
+    <Compile Include="Server\CustomMessageHeader.cs" />
+    <Compile Include="Server\GenericClientManager.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

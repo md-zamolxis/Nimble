@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "JQuery Security";
+}
+@Html.Partial("Index")
+    
+<div class="functions">
+    
+    <div class="function">
+        <input id="btnUserSearch" type="button" value="User Search" onclick="userSearch()"/>
+        Count: <input id="lblUserCount" type="text" readonly="readonly"/>
+        <table>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <br/>
+    
+    <div class="function">
+        <input id="btnUserCreate" type="button" value="User Create" onclick="userCreate()"/>
+        <table>
+            <tr>
+                <td>Code:</td>
+                <td><input id="txtUserCode" type="text" readonly="readonly"/></td>
+            </tr>
+            <tr>
+                <td>Created On:</td>
+                <td><input id="txtUserCreatedOn" type="text" readonly="readonly"/></td>
+            </tr>
+            <tr>
+                <td>Locked On:</td>
+                <td><input id="txtUserLockedOn" type="text" readonly="readonly"/></td>
+            </tr>
+        </table>
+    </div>
+    <br/>
+
+</div>

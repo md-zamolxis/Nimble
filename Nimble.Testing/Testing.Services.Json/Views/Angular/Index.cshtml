@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Angular Home";
+}
+<div>
+    <nav>
+        <ul id="menu">
+            <li>@Html.ActionLink("Home", "Index", "Angular")</li>
+            <li>@Html.ActionLink("Common", "Common", "Angular")</li>
+            <li>@Html.ActionLink("Owner", "Owner", "Angular")</li>
+        </ul>
+    </nav>
+</div>
+<input id="hdfMultilanguage" type="hidden"/>
+<input id="hdfToken" type="hidden"/>
+<div>
+    <input type="text" readonly="readonly" value="Service endpoint:" class="label"/>
+    <input id="serviceEndpoint" type="text" value="@Model.ServiceEndpoint" class="value"/>
+    <br/>
+    <input type="text" value="Resource latency days:" class="label"/>
+    <input id="resourceLatencyDays" type="text" value="@Model.ResourceLatencyDays" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="Emplacement code:" class="label"/>
+    <input id="emplacementCode" type="text" value="@Model.EmplacementCode" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="Application code:" class="label"/>
+    <input id="applicationCode" type="text" value="@Model.ApplicationCode" class="value"/>
+    <br/>
+    <input type="text" value="Culture code:" class="label"/>
+    <input id="cultureCode" type="text" value="@Model.CultureCode" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="Token code:" class="label"/>
+    <input id="tokenCode" type="text" readonly="readonly" value="@Model.TokenCode" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="User code:" class="label"/>
+    <input id="userCode" type="text" value="@Model.UserCode" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="User password:" class="label"/>
+    <input id="userPassword" type="text" value="@Model.UserPassword" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="Reference id:" class="label"/>
+    <input id="referenceId" type="text" value="@Model.ReferenceId" class="value"/>
+    <br/>
+    <input type="text" readonly="readonly" value="Request status:" class="label"/>
+    <input id="requestStatus" type="text" readonly="readonly" value="@Model.RequestStatus" class="value"/>
+    <br/>
+    <input id="btnLogin" type="button" value="Login" onclick="login()"/>
+    <input id="btnLogout" type="button" value="Logout" onclick="logout()"/>
+    <input id="btnSignIn" type="button" value="Sign In" onclick="signIn()"/>
+</div>

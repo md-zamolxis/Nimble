@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="28d54996-4e13-4cce-9871-7d9b310eb034" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.Collection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service1.wsdl" MetadataType="Wsdl" ID="c7640dde-f94d-4c71-8244-69db50a4ebce" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="service2.xsd" MetadataType="Schema" ID="e8f8f705-d7e7-4bac-9384-4b286515909d" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="service21.xsd" MetadataType="Schema" ID="9e24c8eb-4729-496f-a799-e13cf5ca4461" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Multicurrency1.xsd" MetadataType="Schema" ID="6296026e-1631-4879-a820-93d5f9dadeca" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model1.xsd" MetadataType="Schema" ID="923584e0-3d53-40a4-a174-f7b315c24bbc" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="System1.xsd" MetadataType="Schema" ID="140e33cf-0673-4c73-914c-523596ede2eb" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Owner1.xsd" MetadataType="Schema" ID="db17297d-a1bc-4e27-9442-ce249c2a09f5" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Security1.xsd" MetadataType="Schema" ID="1a5e0235-4e6f-4db5-8ec4-81e7bf9bfbbf" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Common1.xsd" MetadataType="Schema" ID="518f324d-b6d9-4df8-ad6c-a93d85d8bde6" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Common1.xsd" MetadataType="Schema" ID="6e3c1cc5-4496-4b5e-b662-c36a387b9072" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Arrays1.xsd" MetadataType="Schema" ID="d8c92899-c756-4097-9f14-7aac0d2b5d9d" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.DataAccess1.xsd" MetadataType="Schema" ID="543f6096-3b24-4bd6-88f0-7e85c33d224c" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Angular Common";
+}
+@Html.Partial("Index")
+    
+<div class="functions">
+    
+    <div class="function">
+        <input id="btnDateIntervalType" type="button" value="DateIntervalType" onclick="dateIntervalType()"/>
+        <table>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>Date current:</td>
+                            <td><input id="txtDateNow" type="date"/></td>
+                        </tr>
+                        <tr>
+                            <td>Include time:</td>
+                            <td><input id="chkIncludeTime" type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <td>First day of week:</td>
+                            <td><select id="ddlFirstDayOfWeek"></select></td>
+                        </tr>
+                        <tr>
+                            <td>Date interval type:</td>
+                            <td><select id="ddlDateIntervalType" onchange="dateInterval()"></select></td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>Date current:</td>
+                            <td><input id="lblDateNow" type="text" readonly="readonly"/></td>
+                        </tr>
+                        <tr>
+                            <td>Date from:</td>
+                            <td><input id="lblDateFrom" type="text" readonly="readonly"/></td>
+                        </tr>
+                        <tr>
+                            <td>Date to:</td>
+                            <td><input id="lblDateTo" type="text" readonly="readonly"/></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <br/>
+    </div>
+    
+    <div class="function">
+        <input id="btnMultilanguage" type="button" value="Multilanguage" onclick="multilanguage()"/>
+        Culture: <select id="ddlCulture"></select>
+        <br/>
+        <input id="btnTranslate" type="button" value="Translate" onclick="translation()"/>
+        Translation: <input id="lblTranslation" type="text" readonly="readonly"/>
+        <table>
+            <tr>
+                <td>Code:</td>
+                <td><input id="txtResourceCode" type="text"/></td>
+            </tr>
+            <tr>
+                <td>Category:</td>
+                <td><input id="txtResourceCategory" type="text"/></td>
+            </tr>
+            <tr>
+                <td>Requests:</td>
+                <td><input id="txtRequests" type="text" value="1"/></td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="function">
+        <input id="btnTokenRead" type="button" value="Token Read" onclick="tokenRead()"/>
+        Token id: <input id="lblTokenId" type="text" readonly="readonly"/>
+        <table>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <br/>
+
+</div>

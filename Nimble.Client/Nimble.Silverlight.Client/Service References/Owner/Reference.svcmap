@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="141ba6e3-d775-4e50-bb8b-5a59ca2ab8f5" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.ObservableCollection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Nimble.Server.Iis/Framework/Owner.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Owner1.xsd" MetadataType="Schema" ID="1099a60d-f5fe-4eae-aa5b-44d061e98ea1" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd5" />
+    <MetadataFile FileName="Owner.disco" MetadataType="Disco" ID="11e1ecc3-65ad-4a89-ae2a-298a878bf354" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?disco" />
+    <MetadataFile FileName="Owner10.xsd" MetadataType="Schema" ID="442d7ab6-df73-48ff-bfe7-2df0400d47c6" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd10" />
+    <MetadataFile FileName="Owner9.xsd" MetadataType="Schema" ID="4a40f1a1-1b5c-4b4e-877e-dc4bed2cd440" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd9" />
+    <MetadataFile FileName="Owner8.xsd" MetadataType="Schema" ID="706e3ef7-8d53-4f96-8883-d56758a2f392" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd0" />
+    <MetadataFile FileName="Owner.xsd" MetadataType="Schema" ID="3ff1de1d-62cf-4e8a-a8e6-09aa407c8a67" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd6" />
+    <MetadataFile FileName="Owner6.xsd" MetadataType="Schema" ID="eebdc482-c742-4bd8-8863-299934e51717" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd2" />
+    <MetadataFile FileName="Owner.wsdl" MetadataType="Wsdl" ID="3485fd17-b190-4957-9473-b1594b50b9df" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?wsdl" />
+    <MetadataFile FileName="Owner5.xsd" MetadataType="Schema" ID="48067c7c-c53c-4954-b207-cc934771573f" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd4" />
+    <MetadataFile FileName="Owner2.xsd" MetadataType="Schema" ID="1fdd9f27-9803-4aad-855e-c711d6b60c09" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd3" />
+    <MetadataFile FileName="Owner4.xsd" MetadataType="Schema" ID="4506a4ad-0f40-4b25-a5e6-2d74c6d6a974" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd8" />
+    <MetadataFile FileName="Owner7.xsd" MetadataType="Schema" ID="4e0d3427-d96c-4063-aa7c-e9d6d07380a0" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd1" />
+    <MetadataFile FileName="Owner3.xsd" MetadataType="Schema" ID="e9867fe3-9fc9-4c8a-be7f-b5b00c6463ba" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Owner.svc?xsd=xsd7" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

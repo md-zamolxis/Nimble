@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="517025ad-b772-4459-abf5-66f8870dfd97" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.ObservableCollection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Multicurrency9.xsd" MetadataType="Schema" ID="1b014163-28ef-436a-ab6f-b48f96bd469b" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd8" />
+    <MetadataFile FileName="Multicurrency4.xsd" MetadataType="Schema" ID="259e9ba1-da67-465c-b199-b5ea24b4262c" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd1" />
+    <MetadataFile FileName="Multicurrency.wsdl" MetadataType="Wsdl" ID="04f3e913-029d-4072-9636-d76db55add20" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?wsdl" />
+    <MetadataFile FileName="Multicurrency.xsd" MetadataType="Schema" ID="91da0087-dd21-4227-8bdb-c89d51655213" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd3" />
+    <MetadataFile FileName="Multicurrency5.xsd" MetadataType="Schema" ID="6fa8e0f8-2531-47f9-99e4-da4eb9cbb10b" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd5" />
+    <MetadataFile FileName="Multicurrency.disco" MetadataType="Disco" ID="a81cc2d2-3e00-4afa-9d7f-ce37dbc0cfee" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?disco" />
+    <MetadataFile FileName="Multicurrency1.xsd" MetadataType="Schema" ID="c5b6afaf-aee8-4ab1-91ff-8a4af50f26c2" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd7" />
+    <MetadataFile FileName="Multicurrency10.xsd" MetadataType="Schema" ID="a988cd7b-79ea-4c5c-a3be-e5de798355cb" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd10" />
+    <MetadataFile FileName="Multicurrency6.xsd" MetadataType="Schema" ID="e60db7a6-7296-4d95-9bb3-14d6f1be3768" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd9" />
+    <MetadataFile FileName="Multicurrency2.xsd" MetadataType="Schema" ID="d7bdaf44-01f6-4d6d-84d1-ff3d4951ddf4" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd2" />
+    <MetadataFile FileName="Multicurrency7.xsd" MetadataType="Schema" ID="3a2b9756-f223-4d18-8e6b-0b496e89f581" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd0" />
+    <MetadataFile FileName="Multicurrency8.xsd" MetadataType="Schema" ID="04a8adb7-bf36-4c69-8999-ff87aa2a2beb" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd4" />
+    <MetadataFile FileName="Multicurrency3.xsd" MetadataType="Schema" ID="cda98ef4-1ceb-4536-80ba-807a54ac0a0a" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc?xsd=xsd6" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

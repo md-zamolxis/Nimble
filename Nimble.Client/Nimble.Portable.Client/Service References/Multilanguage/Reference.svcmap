@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="701521fb-df33-4263-a0bc-e5997d16cd2f" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.Collection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Multilanguage98.xsd" MetadataType="Schema" ID="07cf2191-704e-482c-9083-a987119c5bc9" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd3" />
+    <MetadataFile FileName="Multilanguage95.xsd" MetadataType="Schema" ID="1eb54070-3a02-41e9-8144-70d92a27ecdc" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd5" />
+    <MetadataFile FileName="Multilanguage1.disco" MetadataType="Disco" ID="5d7903cc-d920-408c-895d-ae996c645582" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?disco" />
+    <MetadataFile FileName="Multilanguage91.xsd" MetadataType="Schema" ID="fa65647b-9534-4ba1-92cc-50f0b8574a65" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd1" />
+    <MetadataFile FileName="Multilanguage94.xsd" MetadataType="Schema" ID="19778d0b-712a-42f7-8af0-dd7704921db8" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd7" />
+    <MetadataFile FileName="Multilanguage1.wsdl" MetadataType="Wsdl" ID="d33aca04-5c63-4364-970e-414efcaa062c" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?wsdl" />
+    <MetadataFile FileName="Multilanguage93.xsd" MetadataType="Schema" ID="4a118afc-8e03-4445-a85d-81a79cafaef4" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd0" />
+    <MetadataFile FileName="Multilanguage97.xsd" MetadataType="Schema" ID="602b8e84-e764-47c8-a027-1cb4dd1ad25a" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd2" />
+    <MetadataFile FileName="Multilanguage96.xsd" MetadataType="Schema" ID="76773429-fe92-49da-a629-ae42e8cfbc8d" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd4" />
+    <MetadataFile FileName="Multilanguage9.xsd" MetadataType="Schema" ID="efa0fb51-0c6d-4776-96d4-080ee723f71a" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd6" />
+    <MetadataFile FileName="Multilanguage92.xsd" MetadataType="Schema" ID="859c61cd-a0e6-4707-917c-055beb1dfdea" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd8" />
+    <MetadataFile FileName="Multilanguage.xsd" MetadataType="Schema" ID="cfd3f77e-0fd2-442f-8d5d-87c8d34f13d2" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multilanguage.svc?xsd=xsd9" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

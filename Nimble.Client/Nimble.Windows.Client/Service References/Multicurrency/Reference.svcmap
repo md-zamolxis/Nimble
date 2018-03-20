@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="ee8136a8-42af-48c8-bc22-d4f1bcc87d2b" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="63bbbdd9-dff7-4a09-ba3c-18bfefc1b648" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="9f33699a-26eb-47a9-9365-3aa6337e1b05" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="912920f4-e463-4450-8445-cb6c9a17bbcc" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Multicurrency.xsd" MetadataType="Schema" ID="8b160780-ecd1-475f-8116-ab6bc3ab119f" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.xsd" MetadataType="Schema" ID="350c78c3-cf4d-4b26-bab2-3f42f7b4b762" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="System.xsd" MetadataType="Schema" ID="13d76e7a-fdc0-4abd-bc8b-3e4d520b1629" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Owner.xsd" MetadataType="Schema" ID="391d5223-409c-4b02-9a5d-9a56256a6922" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Security.xsd" MetadataType="Schema" ID="cbd7bb40-12ad-4aa1-ad6c-9b2869c95af6" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Model.Framework.Common.xsd" MetadataType="Schema" ID="fee0a916-2477-4749-b4f8-9311e25b0530" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.Common.xsd" MetadataType="Schema" ID="b720a3b6-d503-4e36-9a18-9d5645a3a7e4" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="657872a2-bb71-4f1f-89ac-b2a582b347f4" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+    <MetadataFile FileName="Nimble.Business.Library.DataAccess.xsd" MetadataType="Schema" ID="583d5d2c-8d13-42ea-a3ad-41121d065796" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Multicurrency.svc/mex/mex" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

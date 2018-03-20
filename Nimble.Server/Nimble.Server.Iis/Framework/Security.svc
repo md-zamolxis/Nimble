@@ -1,0 +1,1 @@
+﻿<%@ ServiceHost Language="C#" Debug="true" Service="Nimble.Server.Iis.Framework.Security" CodeBehind="Security.svc.cs" %>

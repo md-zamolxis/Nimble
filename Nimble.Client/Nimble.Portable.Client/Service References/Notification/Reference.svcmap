@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="c483891e-f98f-4739-9f29-0be6c9ce85d7" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.Collection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Nimble.Server.Iis/Framework/Notification.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Notification.xsd" MetadataType="Schema" ID="d2e99762-37ef-4a1a-b356-ccd4a4f06bda" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd4" />
+    <MetadataFile FileName="Notification.wsdl" MetadataType="Wsdl" ID="0d4e8c1a-3500-4a1f-a83f-be7b8c141b50" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?wsdl" />
+    <MetadataFile FileName="Notification.disco" MetadataType="Disco" ID="ce3135ff-de9c-479b-845f-ebfa7b62c9c5" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?disco" />
+    <MetadataFile FileName="Notification1.xsd" MetadataType="Schema" ID="1e8e8f8d-4049-44d4-9fcd-9ccfafbd9156" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd9" />
+    <MetadataFile FileName="Notification2.xsd" MetadataType="Schema" ID="24dfc45d-2ef2-47d0-ad4c-b9850e4d30d9" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd1" />
+    <MetadataFile FileName="Notification3.xsd" MetadataType="Schema" ID="9ef66a30-b010-49c2-a93d-c64882a88c91" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd5" />
+    <MetadataFile FileName="Notification4.xsd" MetadataType="Schema" ID="076b4e38-71e4-47f1-92aa-982ced630f62" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd10" />
+    <MetadataFile FileName="Notification5.xsd" MetadataType="Schema" ID="66609a37-520b-4d35-8d10-ad53c3adc2d7" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd2" />
+    <MetadataFile FileName="Notification6.xsd" MetadataType="Schema" ID="949ad01f-3994-49be-a26a-3550a7294639" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd6" />
+    <MetadataFile FileName="Notification7.xsd" MetadataType="Schema" ID="abfdedc4-4895-403a-845f-f4329380bc12" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd3" />
+    <MetadataFile FileName="Notification8.xsd" MetadataType="Schema" ID="36e69e00-26dc-40f2-83d3-e0d09e14f485" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd7" />
+    <MetadataFile FileName="Notification9.xsd" MetadataType="Schema" ID="decfff40-fa87-4ced-9ab2-f4d61b247828" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd8" />
+    <MetadataFile FileName="Notification10.xsd" MetadataType="Schema" ID="f71bbcdf-056a-46a6-89e7-bc9c7b7b0204" SourceId="1" SourceUrl="http://localhost/Nimble.Server.Iis/Framework/Notification.svc?xsd=xsd0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

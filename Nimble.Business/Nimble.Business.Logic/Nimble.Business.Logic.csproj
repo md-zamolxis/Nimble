@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{22AE9E37-EF87-414F-9B15-F3049D7D8A92}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nimble.Business.Logic</RootNamespace>
+    <AssemblyName>Nimble.Business.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Framework\CommonLogic.cs" />
+    <Compile Include="Framework\MulticurrencyLogic.cs" />
+    <Compile Include="Framework\GeolocationLogic.cs" />
+    <Compile Include="Framework\MaintenanceLogic.cs" />
+    <Compile Include="Framework\NotificationLogic.cs" />
+    <Compile Include="Framework\OwnerLogic.cs" />
+    <Compile Include="Framework\SecurityLogic.cs" />
+    <Compile Include="Framework\MultilanguageLogic.cs" />
+    <Compile Include="GenericLogic.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nimble.Business.Service\Nimble.Business.Service.csproj">
+      <Project>{21f6a42b-1ad2-48fc-b4ac-450906999a4d}</Project>
+      <Name>Nimble.Business.Service</Name>
+    </ProjectReference>
+    <Reference Include="Hangfire.Core, Version=1.6.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Nimble.Binary\External.Library\Hangfire.Core.1.6.8\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <ProjectReference Include="..\..\Nimble.Business\Nimble.Business.Engine\Nimble.Business.Engine.csproj">
+      <Project>{C88C49CE-40F2-4987-A29A-7B21D31B8C46}</Project>
+      <Name>Nimble.Business.Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Nimble.DataAccess\Nimble.DataAccess.MsSql2008\Nimble.DataAccess.MsSql2008.csproj">
+      <Project>{7B0F7CCF-4FC0-4D2E-A3F9-DD02AEE2152B}</Project>
+      <Name>Nimble.DataAccess.MsSql2008</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nimble.Business.Library\Nimble.Business.Library.csproj">
+      <Project>{6310CCAD-B302-467A-9F11-560A899A699E}</Project>
+      <Name>Nimble.Business.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
