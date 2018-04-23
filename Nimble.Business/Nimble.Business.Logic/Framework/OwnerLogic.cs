@@ -3,13 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hangfire;
 using Nimble.Business.Library.DataAccess;
 using Nimble.Business.Library.Model;
 using Nimble.Business.Library.Model.Framework.Common;
 using Nimble.Business.Library.Model.Framework.Owner;
 using Nimble.Business.Library.Model.Framework.Security;
 using Nimble.DataAccess.MsSql2008.Framework;
-using Nimble.Business.Engine.Core;
 using Nimble.Business.Library.Common;
 using Nimble.Business.Library.DataTransport;
 using Nimble.Business.Service.Core;
@@ -29,6 +29,39 @@ namespace Nimble.Business.Logic.Framework
         #endregion Properties
 
         #region Methods
+
+        private static Organisation OrganisationRead(Mark mark)
+        {
+            Organisation organisation = null;
+            switch (mark.MarkEntityType)
+            {
+                case MarkEntityType.Branch:
+                {
+                    var branch = OwnerSql.Instance.BranchRead(new Branch
+                    {
+                        Id = mark.EntityId
+                    });
+                    if (GenericEntity.HasValue(branch))
+                    {
+                        organisation = branch.Organisation;
+                    }
+                    break;
+                }
+                case MarkEntityType.Post:
+                {
+                    var post = OwnerSql.Instance.PostRead(new Post
+                    {
+                        Id = mark.EntityId
+                    });
+                    if (GenericEntity.HasValue(post))
+                    {
+                        organisation = post.Organisation;
+                    }
+                    break;
+                }
+            }
+            return organisation;
+        }
 
         private static BranchSplit BranchSplitCheck(BranchSplit branchSplit)
         {
@@ -440,7 +473,23 @@ namespace Nimble.Business.Logic.Framework
                 "MarkActionType");
             mark.SetDefaults();
             mark.UpdatedOn = null;
-            return OwnerSql.Instance.MarkCreate(mark);
+            mark = OwnerSql.Instance.MarkCreate(mark);
+            if (mark.MarkActionType == MarkActionType.Like)
+            {
+                var organisation = OrganisationRead(mark);
+                if (GenericEntity.HasValue(organisation))
+                {
+                    if (Kernel.Instance.ServerConfiguration.HangfireDisabled)
+                    {
+                        NotificationLogic.Instance.SubscriberSave(organisation, mark.Person);
+                    }
+                    else
+                    {
+                        BackgroundJob.Enqueue(() => NotificationLogic.Instance.SubscriberSave(organisation, mark.Person));
+                    }
+                }
+            }
+            return mark;
         }
 
         public Mark MarkRead(Mark mark)
@@ -709,7 +758,6 @@ namespace Nimble.Business.Logic.Framework
                 "BranchSplit",
                 "Name");
             branchGroup.BranchSplit = BranchSplitCheck(BranchSplitRead(branchGroup.BranchSplit));
-            EntityValidate(branchGroup);
             try
             {
                 TransactionBegin(new[] {Kernel.Instance.ServerConfiguration.GenericDatabase}, new List<LockType>
@@ -746,7 +794,6 @@ namespace Nimble.Business.Logic.Framework
                 "Code",
                 "Name");
             BranchGroupCheck(BranchGroupRead(branchGroup));
-            EntityValidate(branchGroup);
             try
             {
                 TransactionBegin(new[] {Kernel.Instance.ServerConfiguration.GenericDatabase}, new List<LockType>
@@ -1194,7 +1241,7 @@ namespace Nimble.Business.Logic.Framework
                 employee = OwnerSql.Instance.EmployeeUpdate(employee);
                 CommonLogic.Instance.TokenUpdate(employee);
             }
-            NotificationLogic.Instance.SubscriberSave(employee);
+            NotificationLogic.Instance.SubscriberSave(employee.Organisation, employee.Person);
             return employee;
         }
 
@@ -1255,7 +1302,6 @@ namespace Nimble.Business.Logic.Framework
                 "PostSplit",
                 "Name");
             postGroup.PostSplit = PostSplitCheck(PostSplitRead(postGroup.PostSplit));
-            EntityValidate(postGroup);
             try
             {
                 TransactionBegin(new[] {Kernel.Instance.ServerConfiguration.GenericDatabase}, new List<LockType>
@@ -1292,7 +1338,6 @@ namespace Nimble.Business.Logic.Framework
                 "Code",
                 "Name");
             PostGroupCheck(PostGroupRead(postGroup));
-            EntityValidate(postGroup);
             try
             {
                 TransactionBegin(new[] {Kernel.Instance.ServerConfiguration.GenericDatabase}, new List<LockType>

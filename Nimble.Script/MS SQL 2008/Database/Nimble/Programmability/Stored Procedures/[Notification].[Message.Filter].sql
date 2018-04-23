@@ -415,7 +415,7 @@ BEGIN
 		SET @isFiltered = 1;
 	END
 
---	Filter by texts
+--	Filter by titles
 	SELECT 
 		@criteria			= X.[Criteria],
 		@criteriaExist		= X.[CriteriaExist],
@@ -423,26 +423,26 @@ BEGIN
 		@criteriaIsNull		= X.[CriteriaIsNull],
 		@criteriaValue		= X.[CriteriaValue],
 		@criteriaValueExist	= X.[CriteriaValueExist]
-	FROM [Common].[Criteria.Entity](@predicate.query('/*/Texts')) X;
+	FROM [Common].[Criteria.Entity](@predicate.query('/*/Titles')) X;
 	IF (@criteriaValueExist = 1) BEGIN
-		DECLARE @texts TABLE ([Text] NVARCHAR(MAX));
-		INSERT @texts SELECT DISTINCT * FROM [Common].[String.Entities](@criteriaValue);
+		DECLARE @titles TABLE ([Title] NVARCHAR(MAX));
+		INSERT @titles SELECT DISTINCT * FROM [Common].[String.Entities](@criteriaValue);
 		IF (@@ROWCOUNT > 0)
 			IF (@isFiltered = 0)
 				IF (@isExcluded = 0)
 					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
-					INNER JOIN	@texts	X	ON	M.[MessageText]	LIKE X.[Text];
+					INNER JOIN	@titles	X	ON	M.[MessageTitle]	LIKE X.[Title];
 				ELSE 
 					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
-					LEFT JOIN	@texts	X	ON	M.[MessageText]	LIKE X.[Text]
-					WHERE X.[Text] IS NULL;
+					LEFT JOIN	@titles	X	ON	M.[MessageTitle]	LIKE X.[Title]
+					WHERE X.[Title] IS NULL;
 			ELSE
 				IF (@isExcluded = 0)
 					DELETE X FROM @message	X
 					LEFT JOIN
 					(
 						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
-						INNER JOIN	@texts	X	ON	M.[MessageText]	LIKE X.[Text]
+						INNER JOIN	@titles	X	ON	M.[MessageTitle]	LIKE X.[Title]
 					)	M	ON	X.[Id]	= M.[MessageId]
 					WHERE M.[MessageId] IS NULL;
 				ELSE
@@ -450,8 +450,176 @@ BEGIN
 					LEFT JOIN
 					(
 						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
-						LEFT JOIN	@texts	X	ON	M.[MessageText]	LIKE X.[Text]
-						WHERE X.[Text] IS NULL
+						LEFT JOIN	@titles	X	ON	M.[MessageTitle]	LIKE X.[Title]
+						WHERE X.[Title] IS NULL
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+		SET @isFiltered = 1;
+	END
+
+--	Filter by bodies
+	SELECT 
+		@criteria			= X.[Criteria],
+		@criteriaExist		= X.[CriteriaExist],
+		@isExcluded			= X.[CriteriaIsExcluded],
+		@criteriaIsNull		= X.[CriteriaIsNull],
+		@criteriaValue		= X.[CriteriaValue],
+		@criteriaValueExist	= X.[CriteriaValueExist]
+	FROM [Common].[Criteria.Entity](@predicate.query('/*/Bodies')) X;
+	IF (@criteriaValueExist = 1) BEGIN
+		DECLARE @bodies TABLE ([Body] NVARCHAR(MAX));
+		INSERT @bodies SELECT DISTINCT * FROM [Common].[String.Entities](@criteriaValue);
+		IF (@@ROWCOUNT > 0)
+			IF (@isFiltered = 0)
+				IF (@isExcluded = 0)
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					INNER JOIN	@bodies	X	ON	M.[MessageBody]	LIKE X.[Body];
+				ELSE 
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					LEFT JOIN	@bodies	X	ON	M.[MessageBody]	LIKE X.[Body]
+					WHERE X.[Body] IS NULL;
+			ELSE
+				IF (@isExcluded = 0)
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						INNER JOIN	@bodies	X	ON	M.[MessageBody]	LIKE X.[Body]
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+				ELSE
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						LEFT JOIN	@bodies	X	ON	M.[MessageBody]	LIKE X.[Body]
+						WHERE X.[Body] IS NULL
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+		SET @isFiltered = 1;
+	END
+
+--	Filter by sounds
+	SELECT 
+		@criteria			= X.[Criteria],
+		@criteriaExist		= X.[CriteriaExist],
+		@isExcluded			= X.[CriteriaIsExcluded],
+		@criteriaIsNull		= X.[CriteriaIsNull],
+		@criteriaValue		= X.[CriteriaValue],
+		@criteriaValueExist	= X.[CriteriaValueExist]
+	FROM [Common].[Criteria.Entity](@predicate.query('/*/Sounds')) X;
+	IF (@criteriaValueExist = 1) BEGIN
+		DECLARE @sounds TABLE ([Sound] NVARCHAR(MAX));
+		INSERT @sounds SELECT DISTINCT * FROM [Common].[String.Entities](@criteriaValue);
+		IF (@@ROWCOUNT > 0)
+			IF (@isFiltered = 0)
+				IF (@isExcluded = 0)
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					INNER JOIN	@sounds	X	ON	M.[MessageSound]	LIKE X.[Sound];
+				ELSE 
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					LEFT JOIN	@sounds	X	ON	M.[MessageSound]	LIKE X.[Sound]
+					WHERE X.[Sound] IS NULL;
+			ELSE
+				IF (@isExcluded = 0)
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						INNER JOIN	@sounds	X	ON	M.[MessageSound]	LIKE X.[Sound]
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+				ELSE
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						LEFT JOIN	@sounds	X	ON	M.[MessageSound]	LIKE X.[Sound]
+						WHERE X.[Sound] IS NULL
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+		SET @isFiltered = 1;
+	END
+
+--	Filter by icons
+	SELECT 
+		@criteria			= X.[Criteria],
+		@criteriaExist		= X.[CriteriaExist],
+		@isExcluded			= X.[CriteriaIsExcluded],
+		@criteriaIsNull		= X.[CriteriaIsNull],
+		@criteriaValue		= X.[CriteriaValue],
+		@criteriaValueExist	= X.[CriteriaValueExist]
+	FROM [Common].[Criteria.Entity](@predicate.query('/*/Icons')) X;
+	IF (@criteriaValueExist = 1) BEGIN
+		DECLARE @icons TABLE ([Icon] NVARCHAR(MAX));
+		INSERT @icons SELECT DISTINCT * FROM [Common].[String.Entities](@criteriaValue);
+		IF (@@ROWCOUNT > 0)
+			IF (@isFiltered = 0)
+				IF (@isExcluded = 0)
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					INNER JOIN	@icons	X	ON	M.[MessageIcon]	LIKE X.[Icon];
+				ELSE 
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					LEFT JOIN	@icons	X	ON	M.[MessageIcon]	LIKE X.[Icon]
+					WHERE X.[Icon] IS NULL;
+			ELSE
+				IF (@isExcluded = 0)
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						INNER JOIN	@icons	X	ON	M.[MessageIcon]	LIKE X.[Icon]
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+				ELSE
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						LEFT JOIN	@icons	X	ON	M.[MessageIcon]	LIKE X.[Icon]
+						WHERE X.[Icon] IS NULL
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+		SET @isFiltered = 1;
+	END
+
+--	Filter by message entity types
+	SELECT 
+		@criteria			= X.[Criteria],
+		@criteriaExist		= X.[CriteriaExist],
+		@isExcluded			= X.[CriteriaIsExcluded],
+		@criteriaIsNull		= X.[CriteriaIsNull],
+		@criteriaValue		= X.[CriteriaValue],
+		@criteriaValueExist	= X.[CriteriaValueExist]
+	FROM [Common].[Criteria.Entity](@predicate.query('/*/MessageEntityTypes')) X;
+	IF (@criteriaValueExist = 1) BEGIN
+		DECLARE @messageEntityTypes TABLE ([MessageEntityType] NVARCHAR(MAX));
+		INSERT @messageEntityTypes SELECT DISTINCT * FROM [Common].[Enum.Entities](@criteriaValue);
+		IF (@@ROWCOUNT > 0)
+			IF (@isFiltered = 0)
+				IF (@isExcluded = 0)
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					INNER JOIN	@messageEntityTypes		X	ON	M.[MessageEntityType]	LIKE X.[MessageEntityType];
+				ELSE 
+					INSERT @message SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+					LEFT JOIN	@messageEntityTypes		X	ON	M.[MessageEntityType]	LIKE X.[MessageEntityType]
+					WHERE X.[MessageEntityType] IS NULL;
+			ELSE
+				IF (@isExcluded = 0)
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						INNER JOIN	@messageEntityTypes		X	ON	M.[MessageEntityType]	LIKE X.[MessageEntityType]
+					)	M	ON	X.[Id]	= M.[MessageId]
+					WHERE M.[MessageId] IS NULL;
+				ELSE
+					DELETE X FROM @message	X
+					LEFT JOIN
+					(
+						SELECT DISTINCT M.[MessageId] FROM [Notification].[Message] M
+						LEFT JOIN	@messageEntityTypes		X	ON	M.[MessageEntityType]	LIKE X.[MessageEntityType]
+						WHERE X.[MessageEntityType] IS NULL
 					)	M	ON	X.[Id]	= M.[MessageId]
 					WHERE M.[MessageId] IS NULL;
 		SET @isFiltered = 1;

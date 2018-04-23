@@ -6,7 +6,6 @@ using Nimble.Business.Library.DataAccess;
 using Nimble.Business.Library.Model.Framework.Multilanguage;
 using Nimble.Business.Library.Model.Framework.Security;
 using Nimble.Business.Engine.Common;
-using Nimble.Business.Engine.Core;
 using Nimble.Business.Service.Core;
 
 #endregion Using

@@ -3,7 +3,6 @@
 using Nimble.Business.Library.DataAccess;
 using Nimble.Business.Library.Model.Framework.Geolocation;
 using Nimble.Business.Library.Model.Framework.Security;
-using Nimble.Business.Engine.Core;
 using Nimble.Business.Service.Core;
 
 #endregion Using

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Nimble.Business.Library.Attributes;
 using Nimble.Business.Library.Common;
@@ -25,6 +26,20 @@ namespace Nimble.Business.Library.Model.Framework.Notification
     }
 
     [DataContract]
+    public enum MessageEntityType
+    {
+        [EnumMember]
+        [FieldCategory(Name = "undefined")]
+        Undefined,
+        [EnumMember]
+        [FieldCategory(Name = "branch", Key = "branchId")]
+        Branch,
+        [EnumMember]
+        [FieldCategory(Name = "post", Key = "postId")]
+        Post
+    }
+
+    [DataContract]
     public class MessagePredicate : GenericPredicate
     {
         #region Public Members
@@ -44,7 +59,19 @@ namespace Nimble.Business.Library.Model.Framework.Notification
         public Criteria<DateInterval> CreatedOn { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public Criteria<List<string>> Texts { get; set; }
+        public Criteria<List<string>> Titles { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public Criteria<List<string>> Bodies { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public Criteria<List<string>> Sounds { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public Criteria<List<string>> Icons { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public Criteria<List<MessageEntityType>> MessageEntityTypes { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
         public Criteria<List<Guid?>> EntityIds { get; set; }
@@ -112,10 +139,31 @@ namespace Nimble.Business.Library.Model.Framework.Notification
         public DateTimeOffset? CreatedOn { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        [DatabaseColumn(Name = "MessageText")]
-        [DisplayName("Message text")]
+        [DatabaseColumn(Name = "MessageTitle")]
+        [DisplayName("Message title")]
         [UndefinedValues(ConstantType.NullReference | ConstantType.StringEmptyTrimEnd)]
-        public string Text { get; set; }
+        public string Title { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        [DatabaseColumn(Name = "MessageBody")]
+        [DisplayName("Message body")]
+        public string Body { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        [DatabaseColumn(Name = "MessageSound")]
+        [DisplayName("Message sound")]
+        public string Sound { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        [DatabaseColumn(Name = "MessageIcon")]
+        [DisplayName("Message icon")]
+        public string Icon { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        [DatabaseColumn(Name = "MessageEntityType")]
+        [DisplayName("Message entity type")]
+        [UndefinedValues(MessageEntityType.Undefined)]
+        public MessageEntityType MessageEntityType { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
         [DatabaseColumn(Name = "MessageEntityId")]
@@ -154,6 +202,18 @@ namespace Nimble.Business.Library.Model.Framework.Notification
         public override void SetDefaults()
         {
             CreatedOn = DateTimeOffset.Now;
+            if (string.IsNullOrEmpty(Title))
+            {
+                var notificationType = NotificationType.GetValues().LastOrDefault();
+                var customAttribute = ClientStatic.GetCustomAttribute<FieldCategory>(ClientStatic.NotificationType.GetField(notificationType.ToString()), true);
+                if (customAttribute == null ||
+                    string.IsNullOrEmpty(customAttribute.Description))
+                {
+                    notificationType = Notification.NotificationType.None;
+                    customAttribute = ClientStatic.GetCustomAttribute<FieldCategory>(ClientStatic.NotificationType.GetField(notificationType.ToString()), true);
+                }
+                Title = customAttribute.Description;
+            }
         }
 
         #endregion Methods

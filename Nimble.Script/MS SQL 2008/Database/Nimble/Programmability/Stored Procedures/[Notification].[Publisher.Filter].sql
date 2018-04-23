@@ -101,7 +101,7 @@ BEGIN
 	IF (@criteriaExist = 1) BEGIN
 		DECLARE @organisation TABLE ([Id] UNIQUEIDENTIFIER PRIMARY KEY CLUSTERED);
 		EXEC sp_executesql 
-			N'EXEC [Notification].[Organisation.Filter]
+			N'EXEC [Owner].[Organisation.Filter]
 			@predicate,
 			@emplacementId,
 			@applicationId,

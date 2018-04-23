@@ -13,13 +13,13 @@ namespace Nimble.Business.Library.Model.Framework.Notification
     public enum NotificationType
     {
         [EnumMember]
-        [FieldCategory(Name = "none")]
+        [FieldCategory(Name = "none", Description = "Message has been created.")]
         None = 0,
         [EnumMember]
-        [FieldCategory(Name = "information")]
+        [FieldCategory(Name = "information", Description = "Information has been created.")]
         Information = 1,
         [EnumMember]
-        [FieldCategory(Name = "warning")]
+        [FieldCategory(Name = "warning", Description = "Warning has been created.")]
         Warning = 2
     }
 }

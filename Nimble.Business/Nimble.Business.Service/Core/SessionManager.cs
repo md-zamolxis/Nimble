@@ -397,11 +397,7 @@ namespace Nimble.Business.Service.Core
                 {
                     if (ContextExists())
                     {
-                        var value = HttpContextAccessor.HttpContext.Session.GetString(Constants.SECURITY_SESSION_PATTERN);
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            tokenCode = EngineStatic.JsonDeserialize<string>(value);
-                        }
+                        tokenCode = HttpContextAccessor.HttpContext.Session.GetString(Constants.SECURITY_SESSION_PATTERN);
                     }
                     break;
                 }
@@ -700,7 +696,7 @@ namespace Nimble.Business.Service.Core
                             session.Token.Id = Guid.NewGuid();
                         }
                         session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
-                        HttpContextAccessor.HttpContext.Session.SetString(Constants.SECURITY_SESSION_PATTERN, EngineStatic.JsonSerialize(session.Token.Code));
+                        HttpContextAccessor.HttpContext.Session.SetString(Constants.SECURITY_SESSION_PATTERN, session.Token.Code);
                     }
                     break;
                 }
@@ -878,13 +874,28 @@ namespace Nimble.Business.Service.Core
                     {
                         if (session.Token.Locks == null)
                         {
-                            foreach (var item in lockTokens)
+                            foreach (var lockToken in lockTokens)
                             {
-                                if (item.Value.Locks == null ||
-                                    item.Value.Locks.Count == 0) continue;
+                                if (lockToken.Value.Locks == null ||
+                                    lockToken.Value.Locks.Count == 0) continue;
+                                if (session.Token.Employees != null && 
+                                    lockToken.Value.Employees != null)
+                                {
+                                    var other = true;
+                                    foreach (var employee in session.Token.Employees)
+                                    {
+                                        if (lockToken.Value.Employees.Find(item => item.Organisation.Equals(employee.Organisation)) == null) continue;
+                                        other = false;
+                                        break;
+                                    }
+                                    if (other)
+                                    {
+                                        continue;
+                                    }
+                                }
                                 foreach (var tokenLock in tokenLocks)
                                 {
-                                    if (!item.Value.Locks.Contains(tokenLock)) continue;
+                                    if (!lockToken.Value.Locks.Contains(tokenLock)) continue;
                                     saved = false;
                                     break;
                                 }

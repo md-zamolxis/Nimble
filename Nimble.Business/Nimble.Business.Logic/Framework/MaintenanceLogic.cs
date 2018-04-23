@@ -5,7 +5,6 @@ using Nimble.Business.Library.DataAccess;
 using Nimble.Business.Library.Model.Framework.Maintenance;
 using Nimble.Business.Library.Model.Framework.Security;
 using Nimble.DataAccess.MsSql2008.Framework;
-using Nimble.Business.Engine.Core;
 using Nimble.Business.Service.Core;
 
 #endregion Using

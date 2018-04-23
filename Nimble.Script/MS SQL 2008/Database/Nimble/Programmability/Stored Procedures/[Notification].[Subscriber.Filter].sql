@@ -179,7 +179,7 @@ BEGIN
 	IF (@criteriaExist = 1) BEGIN
 		DECLARE @person TABLE ([Id] UNIQUEIDENTIFIER PRIMARY KEY CLUSTERED);
 		EXEC sp_executesql 
-			N'EXEC [Notification].[Person.Filter]
+			N'EXEC [Owner].[Person.Filter]
 			@predicate,
 			@emplacementId,
 			@applicationId,

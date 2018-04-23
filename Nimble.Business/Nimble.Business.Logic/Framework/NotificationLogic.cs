@@ -1,9 +1,8 @@
 ﻿#region Using
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Nimble.Business.Engine.Core;
-using Nimble.Business.Library.Attributes;
+using Nimble.Business.Service.Core;
 using Nimble.Business.Library.Common;
 using Nimble.Business.Library.DataAccess;
 using Nimble.Business.Library.Model;
@@ -11,7 +10,7 @@ using Nimble.Business.Library.Model.Framework.Security;
 using Nimble.DataAccess.MsSql2008.Framework;
 using Nimble.Business.Library.Model.Framework.Notification;
 using Nimble.Business.Library.Model.Framework.Owner;
-using Nimble.Business.Service.Core;
+using Hangfire;
 
 #endregion Using
 
@@ -176,13 +175,13 @@ namespace Nimble.Business.Logic.Framework
             return NotificationSql.Instance.SubscriberSearch(GenericInputCheck<Subscriber, SubscriberPredicate>(subscriberPredicate));
         }
 
-        public Subscriber SubscriberSave(Employee employee)
+        public Subscriber SubscriberSave(Organisation organisation, Person person)
         {
             var publisher = new Publisher
             {
-                Organisation = employee.Organisation,
+                Organisation = organisation,
                 NotificationType = Flags<NotificationType>.SetAllValues(),
-                CreatedOn = employee.Organisation.CreatedOn
+                CreatedOn = DateTimeOffset.Now
             };
             var publisherEntity = NotificationSql.Instance.PublisherRead(publisher);
             if (!GenericEntity.HasValue(publisherEntity))
@@ -192,9 +191,9 @@ namespace Nimble.Business.Logic.Framework
             var subscriber = new Subscriber
             {
                 Publisher = publisherEntity,
-                Person = employee.Person,
+                Person = person,
                 NotificationType = Flags<NotificationType>.SetAllValues(),
-                CreatedOn = employee.CreatedOn
+                CreatedOn = DateTimeOffset.Now
             };
             var subscriberEntity = NotificationSql.Instance.SubscriberRead(subscriber);
             if (!GenericEntity.HasValue(subscriberEntity))
@@ -214,10 +213,19 @@ namespace Nimble.Business.Logic.Framework
                 message,
                 "NotificationType",
                 "MessageActionType",
-                "Text");
+                "MessageEntityType");
             message.Publisher = PublisherRead(message.Publisher);
             message.SetDefaults();
-            return NotificationSql.Instance.MessageCreate(message);
+            message = NotificationSql.Instance.MessageCreate(message);
+            if (Kernel.Instance.ServerConfiguration.HangfireDisabled)
+            {
+                MessageSend(message);
+            }
+            else
+            {
+                BackgroundJob.Enqueue(() => MessageSend(message));
+            }
+            return message;
         }
 
         public Message MessageRead(Message message)
@@ -236,30 +244,19 @@ namespace Nimble.Business.Logic.Framework
             return NotificationSql.Instance.MessageSearch(GenericInputCheck<Message, MessagePredicate>(messagePredicate));
         }
 
-        public Message MessageSave(Organisation organisation, Message message)
+        public Message MessageSend(Message message)
         {
-            var publisher = NotificationSql.Instance.PublisherRead(new Publisher
+            if (!GenericEntity.HasValue(message.Publisher))
             {
-                Organisation = organisation
-            });
-            if (GenericEntity.HasValue(publisher) &&
-                publisher.NotificationType.HasValues(message.NotificationType.GetValues()))
+                message.Publisher = NotificationSql.Instance.PublisherRead(message.Publisher);
+            }
+            if (!GenericEntity.HasValue(message))
             {
-                message.Publisher = publisher;
                 message.SetDefaults();
-                if (string.IsNullOrEmpty(message.Text))
-                {
-                    var notificationType = message.NotificationType.GetValues().LastOrDefault();
-                    var customAttribute = ClientStatic.GetCustomAttribute<FieldCategory>(ClientStatic.NotificationType.GetField(notificationType.ToString()), true);
-                    if (customAttribute == null ||
-                        string.IsNullOrEmpty(customAttribute.Description))
-                    {
-                        notificationType = NotificationType.None;
-                        customAttribute = ClientStatic.GetCustomAttribute<FieldCategory>(ClientStatic.NotificationType.GetField(notificationType.ToString()), true);
-                    }
-                    message.Text = customAttribute.Description;
-                }
                 message = NotificationSql.Instance.MessageCreate(message);
+            }
+            if (message.Publisher.NotificationType.HasValues(message.NotificationType.GetValues()))
+            {
             }
             return message;
         }

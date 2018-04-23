@@ -737,7 +737,7 @@ namespace Nimble.Business.Logic
             if (resource != null &&
                 Kernel.Instance.ServerConfiguration.UseTranslationModule)
             {
-                resource = MultilanguageLogic.Instance.ResourceRead(resource);
+                resource = MultilanguageSql.Instance.ResourceRead(resource);
                 if (culture != null)
                 {
                     translation = new Translation
@@ -745,7 +745,7 @@ namespace Nimble.Business.Logic
                         Culture = culture,
                         Resource = resource
                     };
-                    var translationEntity = Kernel.Instance.ServerConfiguration.MultilanguageCacheOnLoad ? Kernel.Instance.GenericCache.GetEntity(translation) : MultilanguageLogic.Instance.TranslationRead(translation);
+                    var translationEntity = Kernel.Instance.ServerConfiguration.MultilanguageCacheOnLoad ? Kernel.Instance.GenericCache.GetEntity(translation) : MultilanguageSql.Instance.TranslationRead(translation);
                     if (GenericEntity.HasValue(translationEntity))
                     {
                         translation = translationEntity;
