@@ -118,7 +118,7 @@ namespace Nimble.DataAccess.MsSql2008.Framework
 
         public User UserCreate(User user)
         {
-            user.Password = EngineStatic.EncryptMd5(user.Password);
+            EngineStatic.EncryptMd5(user);
             return EntityAction(PermissionType.UserCreate, user).Entity;
         }
 
@@ -129,7 +129,7 @@ namespace Nimble.DataAccess.MsSql2008.Framework
 
         public User UserUpdate(User user)
         {
-            user.Password = EngineStatic.EncryptMd5(user.Password);
+            EngineStatic.EncryptMd5(user);
             return EntityAction(PermissionType.UserUpdate, user).Entity;
         }
 

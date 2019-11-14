@@ -372,7 +372,7 @@ namespace Testing.DataAccess.MsSql2008
         [TestMethod]
         public void TestEncryptMd5()
         {
-            var encrypted = EngineStatic.EncryptMd5(null);
+            var encrypted = EngineStatic.EncryptMd5((string) null);
         }
     }
 }

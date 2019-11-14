@@ -176,6 +176,10 @@ namespace Nimble.Business.Library.Model.Framework.Security
         public DateTimeOffset LastUsedOn { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
+        [DisplayName("Token last saved on")]
+        public DateTimeOffset? LastSavedOn { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         [DisplayName("Token request host")]
         public string RequestHost { get; set; }
 

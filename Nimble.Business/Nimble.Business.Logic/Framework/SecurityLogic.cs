@@ -187,7 +187,7 @@ namespace Nimble.Business.Logic.Framework
         {
             user = UserRead(user);
             EntityInstanceCheck(user);
-            if (string.CompareOrdinal(user.Password, EngineStatic.EncryptMd5(oldPassword)) == 0)
+            if (EngineStatic.PasswordMatch(oldPassword, user))
             {
                 user.Password = newPassword;
                 EntityPropertiesCheck(
@@ -204,24 +204,27 @@ namespace Nimble.Business.Logic.Framework
 
         public static User UserSave(User user, EmployeeActorType employeeActorType, bool create)
         {
-            EntityPropertiesCheck(
-                user,
-                "Code",
-                "Password");
             var userEntity = SecuritySql.Instance.UserRead(user);
             if (create ||
                 !GenericEntity.HasValue(userEntity))
             {
+                EntityPropertiesCheck(
+                    user,
+                    "Code",
+                    "Password");
                 user.SetDefaults();
                 user.Emplacement = EmplacementCheck(user.Emplacement);
                 user = SecuritySql.Instance.UserCreate(user);
             }
             else
             {
+                EntityPropertiesCheck(
+                    user,
+                    "Code");
                 EmplacementCheck(user.Emplacement);
                 if (!user.Equals(userEntity) ||
                     !user.Code.Equals(userEntity.Code) ||
-                    !user.Password.Equals(userEntity.Password))
+                    !string.IsNullOrEmpty(user.Password))
                 {
                     user = SecuritySql.Instance.UserUpdate(user);
                 }
@@ -426,12 +429,24 @@ namespace Nimble.Business.Logic.Framework
 
         #region Log
 
-        public Log LogSave(Log log)
+        public Log LogSave(Log log, string[] values)
         {
-            return SecuritySql.Instance.LogCreate(log);
+            log = SecuritySql.Instance.LogCreate(log);
+            if (!string.IsNullOrEmpty(Kernel.Instance.ServerConfiguration.TemporaryLogFolder) &&
+                values != null &&
+                values.Length > 0)
+            {
+                var data = EngineStatic.PortableXmlSerialize(log) + Environment.NewLine + Environment.NewLine;
+                foreach (var value in values)
+                {
+                    data += value + Environment.NewLine + Environment.NewLine;
+                }
+                FileSave(string.Format(Kernel.Instance.ServerConfiguration.TemporaryLogFolder, log.Id), data);
+            }
+            return log;
         }
 
-        public Log LogCreate(Log log)
+        public Log LogCreate(Log log, string[] values = null)
         {
             EntityInstanceCheck(log);
             var session = Kernel.Instance.SessionManager.SessionRead();
@@ -474,11 +489,11 @@ namespace Nimble.Business.Logic.Framework
                 "LogActionType");
             if (Kernel.Instance.ServerConfiguration.HangfireDisabled)
             {
-                log = LogSave(log);
+                log = LogSave(log, values);
             }
             else
             {
-                BackgroundJob.Enqueue(() => LogSave(log));
+                BackgroundJob.Enqueue(() => LogSave(log, values));
             }
             return log;
         }

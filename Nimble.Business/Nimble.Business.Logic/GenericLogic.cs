@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.ServiceModel;
+using System.Text;
 using System.Xml.Schema;
 using Nimble.Business.Engine.Common;
 using Nimble.Business.Library.Attributes;
@@ -30,9 +31,9 @@ namespace Nimble.Business.Logic
         #region Properties
 
         protected Logging Logging { get; set; }
-        protected bool DisableLoggingError { get; set; }
-        protected bool DisableLoggingInformation { get; set; }
-        protected bool DisableLoggingWarning { get; set; }
+        protected bool LoggingErrorDisable { get; set; }
+        protected bool LoggingInformationDisable { get; set; }
+        protected bool LoggingWarningDisable { get; set; }
         protected string XmlValidationMessage { get; set; }
 
         #endregion Properties
@@ -74,6 +75,11 @@ namespace Nimble.Business.Logic
             return FilePath(reference.HasValue ? reference.ToString() : string.Empty, extension);
         }
 
+        protected static FileStream FileSave(string filePath, string data)
+        {
+            return FileSave(filePath, Encoding.UTF8.GetBytes(data));
+        }
+
         protected static FileStream FileSave(string filePath, byte[] data)
         {
             FileStream fileStream = null;
@@ -109,10 +115,10 @@ namespace Nimble.Business.Logic
             TransactionBegin(connectionStrings, null);
         }
 
-        protected static void TransactionBegin(string[] connectionStrings, List<LockType> lockTypes)
+        protected static void TransactionBegin(string[] connectionStrings, List<LockType> lockTypes, bool checkOrganisation = true)
         {
             var session = Kernel.Instance.SessionManager.SessionRead();
-            if (!Kernel.Instance.SessionManager.LockCreate(session, connectionStrings, lockTypes))
+            if (!Kernel.Instance.SessionManager.LockCreate(session, connectionStrings, lockTypes, checkOrganisation))
             {
                 ThrowException("Cannot perform this action, because is blocked by other session or the open transaction of the same session. Try again and if problem persists, contacts you system administrator.");
             }
@@ -728,16 +734,16 @@ namespace Nimble.Business.Logic
             resource.Emplacement = session.Token.Emplacement;
             resource.Application = session.Token.Application;
             resource.Category = resource.Category ?? string.Empty;
-            return GenericTranslation(session.Token.Culture, resource);
+            return GenericTranslation(session.Token.Culture, resource, session.Token, session.HasTransactionScope());
         }
 
-        protected static Translation GenericTranslation(Culture culture, Resource resource)
+        protected static Translation GenericTranslation(Culture culture, Resource resource, Token token, bool hasTransactionScope)
         {
             Translation translation = null;
             if (resource != null &&
                 Kernel.Instance.ServerConfiguration.UseTranslationModule)
             {
-                resource = MultilanguageSql.Instance.ResourceRead(resource);
+                resource = MultilanguageLogic.Instance.ResourceSave(resource, token, hasTransactionScope);
                 if (culture != null)
                 {
                     translation = new Translation
@@ -1020,7 +1026,7 @@ namespace Nimble.Business.Logic
 
         protected void LoggingError(string message, bool rethrow)
         {
-            if (DisableLoggingError) return;
+            if (LoggingErrorDisable) return;
             if (Logging == null)
             {
                 Kernel.Instance.Logging.Error(message, rethrow);
@@ -1033,7 +1039,7 @@ namespace Nimble.Business.Logic
 
         protected void LoggingError(Exception exception, bool rethrow)
         {
-            if (DisableLoggingError) return;
+            if (LoggingErrorDisable) return;
             if (Logging == null)
             {
                 Kernel.Instance.Logging.Error(exception, rethrow);
@@ -1046,7 +1052,7 @@ namespace Nimble.Business.Logic
 
         protected void LoggingError(Exception exception, string message)
         {
-            if (DisableLoggingError) return;
+            if (LoggingErrorDisable) return;
             if (Logging == null)
             {
                 Kernel.Instance.Logging.Error(exception, message);
@@ -1059,7 +1065,7 @@ namespace Nimble.Business.Logic
 
         protected void LoggingInformation(string message, params object[] parameters)
         {
-            if (DisableLoggingInformation) return;
+            if (LoggingInformationDisable) return;
             if (Logging == null)
             {
                 Kernel.Instance.Logging.Information(message, parameters);
@@ -1072,7 +1078,7 @@ namespace Nimble.Business.Logic
 
         protected void LoggingWarning(string message, params object[] parameters)
         {
-            if (DisableLoggingWarning) return;
+            if (LoggingWarningDisable) return;
             if (Logging == null)
             {
                 Kernel.Instance.Logging.Warning(message, parameters);

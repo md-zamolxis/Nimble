@@ -187,8 +187,7 @@ namespace Nimble.Business.Logic.Framework
             var groupIds = new Dictionary<Guid?, Group>();
             foreach (var group in groups)
             {
-                if (group == null ||
-                    !group.Id.HasValue ||
+                if (!group.Id.HasValue ||
                     groupIds.ContainsKey(group.Id)) continue;
                 groupIds.Add(group.Id, group.Reduce<Group>());
             }
@@ -304,8 +303,7 @@ namespace Nimble.Business.Logic.Framework
             {
                 user = employee.Person.User;
             }
-            if (!GenericEntity.HasValue(user) ||
-                string.CompareOrdinal(user.Password, isAnonymous ? user.Password : EngineStatic.EncryptMd5(userPassword)) != 0)
+            if (!EngineStatic.PasswordMatch(userPassword, user, isAnonymous))
             {
                 SecurityLogic.Instance.LogCreate(new Log
                 {
@@ -645,6 +643,7 @@ namespace Nimble.Business.Logic.Framework
             Kernel.Instance.SessionManager.SessionClear(session);
             SessionDataMap(session, employee);
             SecurityLogic.Instance.LogCreate(new Log {LogActionType = LogActionType.LoginSuccess});
+            Kernel.Instance.SessionManager.SessionUpdate(session);
             return session.Token;
         }
 
@@ -726,7 +725,7 @@ namespace Nimble.Business.Logic.Framework
             }
             foreach (var item in emails)
             {
-                var url = string.Format(Kernel.Instance.ServerConfiguration.ResetPasswordUrl, HttpUtility.UrlEncode(GenericEntity.GuidToBase64(item.Value.Id)), HttpUtility.UrlEncode(item.Value.Password));
+                var url = string.Format(Kernel.Instance.ServerConfiguration.ResetPasswordUrl, HttpUtility.UrlEncode(GenericEntity.GuidToBase64(item.Value.Id)), HttpUtility.UrlEncode(item.Value.Hash));
                 var subject = GenericTranslate("Reset password URL {0}", ResourceCategoryType.BusinessLogic, url);
                 var body = GenericTranslate("Hi, see below reset password URL {0}", ResourceCategoryType.BusinessLogic, url);
                 var sendFaultExceptionDetail = Kernel.Instance.MailManager.Send(new MailMessage(Kernel.Instance.MailManager.MailContext.UserName, item.Key, subject, body));
@@ -749,7 +748,7 @@ namespace Nimble.Business.Logic.Framework
             {
                 ThrowException("No user found.");
             }
-            else if (string.CompareOrdinal(user.Password, value) != 0)
+            else if (!EngineStatic.PasswordMatch(user.Hash, value))
             {
                 ThrowException("Reset password value is obsolete.");
             }
@@ -843,6 +842,10 @@ namespace Nimble.Business.Logic.Framework
             var session = Kernel.Instance.SessionManager.SessionRead();
             if (token.Account != null)
             {
+                if (GenericEntity.HasValue(token.Culture))
+                {
+                    token.Account.CultureId = token.Culture.Id;
+                }
                 if ((token.Account.CultureId.HasValue &&
                      !token.Account.CultureId.Equals(session.Token.Account.CultureId)) ||
                     (session.Token.Account.CultureId.HasValue &&
@@ -897,7 +900,11 @@ namespace Nimble.Business.Logic.Framework
         public List<Token> TokenSearch(TokenPredicate tokenPredicate)
         {
             EntityInstanceCheck(tokenPredicate);
-            return TokenSearch(GenericInputCheck<Token, TokenPredicate>(tokenPredicate), Kernel.Instance.SessionManager.TokenSearch());
+            return TokenSearch(GenericInputCheck<Token, TokenPredicate>(tokenPredicate), Kernel.Instance.SessionManager.TokenSearch()).Select(item =>
+            {
+                item.Permissions = null;
+                return item;
+            }).ToList();
         }
 
         public bool TokenHasPermissions(PermissionType[] permissionTypes)
@@ -1381,7 +1388,7 @@ namespace Nimble.Business.Logic.Framework
                     }
                     else
                     {
-                        if (string.CompareOrdinal(userEntity.Password, EngineStatic.EncryptMd5(user.Password)) == 0)
+                        if (EngineStatic.PasswordMatch(user, userEntity))
                         {
                             user = userEntity;
                         }

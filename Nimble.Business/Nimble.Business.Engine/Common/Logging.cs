@@ -44,13 +44,14 @@ namespace Nimble.Business.Engine.Common
 
         #region Methods
 
-        public Logging(string source, OverflowAction? overflowAction = null, int? retentionDays = null)
+        public Logging(string source, string log, OverflowAction? overflowAction = null, int? retentionDays = null)
         {
             if (!string.IsNullOrEmpty(source))
             {
                 eventLog = new EventLog
                 {
-                    Source = source
+                    Source = source,
+                    Log = log
                 };
                 if (overflowAction.HasValue &&
                     retentionDays.HasValue)
@@ -87,7 +88,7 @@ namespace Nimble.Business.Engine.Common
         public void Error(Exception exception, bool rethrow)
         {
             if (exception == null) return;
-            Error(string.Format(Constants.EXCEPTION_LOG_FORMAT, exception.Source, exception.Message, exception.StackTrace), false);
+            Error(string.Format(Constants.EXCEPTION_LOG_FORMAT, exception.Source, exception.Message, exception.StackTrace, exception.InnerException?.Message), false);
             if (rethrow)
             {
                 throw FaultExceptionDetail.Create(new FaultExceptionDetail(exception.Message));
@@ -97,7 +98,7 @@ namespace Nimble.Business.Engine.Common
         public void Error(Exception exception, string message)
         {
             if (exception == null) return;
-            Error(string.Format(Constants.EXCEPTION_LOG_FORMAT, exception.Source, exception.Message, exception.StackTrace), false);
+            Error(string.Format(Constants.EXCEPTION_LOG_FORMAT, exception.Source, exception.Message, exception.StackTrace, exception.InnerException?.Message), false);
             if (!string.IsNullOrEmpty(message))
             {
                 throw FaultExceptionDetail.Create(new FaultExceptionDetail(message));

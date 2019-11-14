@@ -19,7 +19,7 @@ RETURNS BIT
 AS
 BEGIN
 	DECLARE @isNumeric BIT = 0;
-	IF (ISNUMERIC(@value) = 1 AND LEN(@value) < 10 AND @value LIKE '%[0-9]%') 
+	IF (ISNUMERIC(@value) = 1 AND LEN(@value) < 10 AND @value NOT LIKE '%[^0-9]%') 
 		SET @isNumeric = 1;
 	RETURN @isNumeric;
 END

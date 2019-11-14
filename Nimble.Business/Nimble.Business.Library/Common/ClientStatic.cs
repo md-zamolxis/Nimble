@@ -281,6 +281,11 @@ namespace Nimble.Business.Library.Common
             return GetEnumAttributePairs<E, T>(GetEnumValues<E>());
         }
 
+        public static string HexHashCode(string value)
+        {
+            return string.Format("{0:X}", value.GetHashCode());
+        }
+
         #endregion Reflection
 
         #endregion Methods

@@ -9,12 +9,15 @@ using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using System.Xml;
 using System.Xml.Serialization;
 using Nimble.Business.Engine.Core;
 using Nimble.Business.Library.Common;
+using Nimble.Business.Library.Model;
+using Nimble.Business.Library.Model.Framework.Security;
 
 #endregion Usings
 
@@ -71,6 +74,32 @@ namespace Nimble.Business.Engine.Common
                 stringBuilder.Append(item.ToString("x2").ToLower());
             }
             return stringBuilder.ToString();
+        }
+
+        public static void EncryptMd5(User user)
+        {
+            if (user == null) return;
+            user.Password = EncryptMd5(user.Password);
+        }
+
+        public static bool PasswordMatch(string value, string hash)
+        {
+            return string.CompareOrdinal(value, hash) == 0;
+        }
+
+        public static bool PasswordMatch(string value, string hash, bool isAnonymous)
+        {
+            return PasswordMatch(hash, isAnonymous ? hash : EncryptMd5(value));
+        }
+
+        public static bool PasswordMatch(string value, User persisted, bool isAnonymous = false)
+        {
+            return GenericEntity.HasValue(persisted) && PasswordMatch(value, persisted.Hash, isAnonymous);
+        }
+
+        public static bool PasswordMatch(User user, User persisted, bool isAnonymous = false)
+        {
+            return user != null && PasswordMatch(user.Password, persisted, isAnonymous);
         }
 
         public static T SoapXmlClone<T>(T entity)
@@ -272,6 +301,28 @@ namespace Nimble.Business.Engine.Common
         {
             var javaScriptSerializer = new JavaScriptSerializer();
             return javaScriptSerializer.Deserialize<T>(value);
+        }
+
+        public static void FileWait(string path, int timeout = 1000, int retries = 10)
+        {
+            for (var index = 1; index <= retries; index++)
+            {
+                FileStream fileStream = null;
+                try
+                {
+                    fileStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+                    fileStream.Dispose();
+                }
+                catch
+                {
+                    fileStream?.Dispose();
+                    if (index == retries)
+                    {
+                        throw;
+                    }
+                    Thread.Sleep(timeout);
+                }
+            }
         }
 
         #endregion Serialization

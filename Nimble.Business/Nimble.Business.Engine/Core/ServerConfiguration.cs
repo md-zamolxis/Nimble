@@ -74,8 +74,10 @@ namespace Nimble.Business.Engine.Core
         private int smtpPort = 25;
         private int smtpTimeout = 5000;
         private int smtpFailedTimeout = 5000;
-        private string wcfSessionInactivityTimeout = "00:30:00";
+        private string sessionInactivityTimeout = "00:30:00";
+        private string sessionSaveTimeout = "00:03:00";
         private string accountLastUsedLatency = "00:30:00";
+        private string hangfireJobExpiration = "00:30:00";
         protected readonly Dictionary<string, DatabaseConstraintConfiguration> databaseConstraints = new Dictionary<string, DatabaseConstraintConfiguration>();
         protected readonly Dictionary<string, ServiceRolesConfiguration> serviceRoles = new Dictionary<string, ServiceRolesConfiguration>();
 
@@ -83,7 +85,7 @@ namespace Nimble.Business.Engine.Core
 
         #region Methods
 
-        private ServiceRolesConfiguration ReadServiceRolesConfiguration(XmlReader subtree)
+        private ServiceRolesConfiguration ReadServiceRolesConfiguration(XmlReader xmlReader, XmlReader subtree)
         {
             ServiceRolesConfiguration serviceRolesConfiguration = null;
             var attribute = xmlReader.GetAttribute("code");
@@ -210,6 +212,9 @@ namespace Nimble.Business.Engine.Core
         [ApplicationSetting("TemporaryDataFolder")]
         public string TemporaryDataFolder { get; private set; }
 
+        [ApplicationSetting("TemporaryLogFolder")]
+        public string TemporaryLogFolder { get; private set; }
+
         [ApplicationSetting("DatabaseCommandTimeout")]
         public int? DatabaseCommandTimeout { get; private set; }
 
@@ -225,8 +230,11 @@ namespace Nimble.Business.Engine.Core
         [ApplicationSetting("SqlCommandDelay")]
         public string SqlCommandDelay { get; private set; }
 
-        [ApplicationSetting("ApplicationEventLogSource")]
-        public string ApplicationEventLogSource { get; private set; }
+        [ApplicationSetting("EventLogSource")]
+        public string EventLogSource { get; private set; }
+
+        [ApplicationSetting("EventLogName")]
+        public string EventLogName { get; private set; }
 
         [ApplicationSetting("ForceRestoringDatabases")]
         public bool ForceRestoringDatabases { get; private set; }
@@ -240,12 +248,22 @@ namespace Nimble.Business.Engine.Core
         [ApplicationSetting("SessionInactivityTimeout")]
         public string SessionInactivityTimeout
         {
-            get { return wcfSessionInactivityTimeout; }
-            private set { wcfSessionInactivityTimeout = value; }
+            get { return sessionInactivityTimeout; }
+            private set { sessionInactivityTimeout = value; }
         }
 
-        [ApplicationSetting("OpenTokens")]
-        public string OpenTokens { get; private set; }
+        [ApplicationSetting("SessionSaveTimeout")]
+        public string SessionSaveTimeout
+        {
+            get { return sessionSaveTimeout; }
+            private set { sessionSaveTimeout = value; }
+        }
+
+        [ApplicationSetting("OpenTokensPath")]
+        public string OpenTokensPath { get; private set; }
+
+        [ApplicationSetting("OpenTokensRemoveCron")]
+        public string OpenTokensRemoveCron { get; private set; }
 
         [ApplicationSetting("CultureCode")]
         public string CultureCode { get; private set; }
@@ -302,6 +320,13 @@ namespace Nimble.Business.Engine.Core
         [ApplicationSetting("HangfireDisabled")]
         public bool HangfireDisabled { get; private set; }
 
+        [ApplicationSetting("HangfireJobExpration")]
+        public string HangfireJobExpration
+        {
+            get { return hangfireJobExpiration; }
+            private set { hangfireJobExpiration = value; }
+        }
+
         [ApplicationSetting("HangfireInstance")]
         public string HangfireInstance { get; private set; }
 
@@ -316,7 +341,7 @@ namespace Nimble.Business.Engine.Core
         {
         }
 
-        public override bool ReadNodes()
+        public override bool ReadNodes(XmlReader xmlReader)
         {
             var found = false;
             switch (path)
@@ -342,7 +367,7 @@ namespace Nimble.Business.Engine.Core
                 }
                 case "configuration/service.roles/role":
                 {
-                    var serviceRolesConfiguration = ReadServiceRolesConfiguration(xmlReader.ReadSubtree());
+                    var serviceRolesConfiguration = ReadServiceRolesConfiguration(xmlReader, xmlReader.ReadSubtree());
                     if (serviceRolesConfiguration != null)
                     {
                         var key = serviceRolesConfiguration.ToString();

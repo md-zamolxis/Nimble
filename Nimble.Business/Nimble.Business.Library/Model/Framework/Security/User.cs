@@ -78,10 +78,13 @@ namespace Nimble.Business.Library.Model.Framework.Security
         }
 
         [DataMember(EmitDefaultValue = false)]
-        [DatabaseColumn(Name = "UserPassword")]
         [DisplayName("User password")]
         [UndefinedValues(ConstantType.NullReference | ConstantType.StringEmptyTrim)]
         public string Password { get; set; }
+
+        [DatabaseColumn(Name = "UserPassword")]
+        [DisplayName("User password hash")]
+        public string Hash { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
         [DatabaseColumn(Name = "UserCreatedOn")]

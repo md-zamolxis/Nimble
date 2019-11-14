@@ -21,7 +21,7 @@ namespace Nimble.Business.Library.Common
         public const string IP_VALIDATION_PATTERN = @"^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
         public const string BASE64_VALIDATION_PATTERN = @"^[a-zA-Z0-9\+/]*={0,3}$";
         public const string IP_INFO_FORMAT = "IP {0} belongs to block ({1}, {2}) of location with: code - {3}; country - {4}; region - {5}; city - {6}; postal code - {7}; latitude - {8}; longitude - {9}; metro code - {10}; area code - {11}";
-        public const string EXCEPTION_LOG_FORMAT = "<br>Source: {0} <br>Message: {1} <br>Stack trace: {2}";
+        public const string EXCEPTION_LOG_FORMAT = "<br>Source: {0} <br>Message: {1} <br>Stack trace: {2} <br>Inner: {3}";
         public const string SECURITY_VIOLATION_ENTITY_INVALID = "Security violation - invalid {0}.";
         public const string SECURITY_VIOLATION_ENTITY_MISSED = "Security violation - missing {0}.";
         public const string SECURITY_VIOLATION_ENTITY_DIFFERENT = "{0} security violation - {1} are different.";
@@ -43,7 +43,7 @@ namespace Nimble.Business.Library.Common
         public const string XML_ARRAY_TAG = "<ArrayOf{0}>{1}</ArrayOf{0}>";
         public const string STRING_CODE_MAX_WARNING = "[{0}] not valid - maximum string length must be less or equal than {1} symbols ([{2}]).";
         public const string BUSINESS_RULE_UNHANDLED_ERROR = "Business rule error - see application log for details.";
-        public const string UNHANDLED_ERROR = "An unhandled error has occured - [{0}].";
+        public const string UNHANDLED_ERROR = "An unhandled error has occurred - [{0}].";
         public const string ENTITY_ACCESS_DENIED = "Current {0} [{1}] does not has administrative permissions.";
         public const string CSV_REGEX_EXPRESSION = "((?([\\x22])(?:[\\x22])(?<Column>[^\\x22]*)(?:[\\x22])|(?<Column>[^,\r\n]*]*))(?:,?))+(?:$|[\r\n]{0,2})";
         public const string CSV_COLUMN_NAME = "Column";

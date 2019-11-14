@@ -1,5 +1,6 @@
 ﻿#region Using
 
+using System;
 using System.Web;
 using Hangfire;
 using Hangfire.Dashboard;
@@ -25,7 +26,8 @@ namespace Nimble.Business.Service.Core
             if (string.IsNullOrEmpty(Kernel.Instance.ServerConfiguration.HangfireDatabase)) return;
             GlobalConfiguration.Configuration.UseSqlServerStorage(Kernel.Instance.ServerConfiguration.HangfireDatabase, new SqlServerStorageOptions
             {
-                SchemaName = Kernel.Instance.ServerConfiguration.HangfireInstance
+                SchemaName = Kernel.Instance.ServerConfiguration.HangfireInstance,
+                JobExpirationCheckInterval = TimeSpan.Parse(Kernel.Instance.ServerConfiguration.HangfireJobExpration)
             });
             appBuilder.UseHangfireDashboard("/Hangfire", new DashboardOptions
             {
@@ -42,7 +44,8 @@ namespace Nimble.Business.Service.Core
             if (string.IsNullOrEmpty(Kernel.Instance.ServerConfiguration.HangfireDatabase)) return;
             JobStorage.Current = new SqlServerStorage(Kernel.Instance.ServerConfiguration.HangfireDatabase, new SqlServerStorageOptions
             {
-                SchemaName = Kernel.Instance.ServerConfiguration.HangfireInstance
+                SchemaName = Kernel.Instance.ServerConfiguration.HangfireInstance,
+                JobExpirationCheckInterval = TimeSpan.Parse(Kernel.Instance.ServerConfiguration.HangfireJobExpration)
             });
         }
 

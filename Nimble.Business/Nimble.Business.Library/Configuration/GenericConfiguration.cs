@@ -34,7 +34,6 @@ namespace Nimble.Business.Library.Configuration
         #region Properties
 
         protected string path;
-        protected readonly XmlReader xmlReader;
         protected readonly List<string> elements = new List<string>();
         protected readonly Dictionary<string, string> appSettings = new Dictionary<string, string>();
         protected readonly Dictionary<string, ConnectionStringConfiguration> connectionStrings = new Dictionary<string, ConnectionStringConfiguration>();
@@ -49,12 +48,12 @@ namespace Nimble.Business.Library.Configuration
             return string.Join("/", elements.ToArray());
         }
 
-        protected void ReadConfiguration()
+        protected void ReadConfiguration(XmlReader xmlReader)
         {
             while (xmlReader.Read())
             {
                 AddPathElement(xmlReader);
-                var found = ReadNodes();
+                var found = ReadNodes(xmlReader);
                 switch (path)
                 {
                     case "configuration/appSettings/add":
@@ -260,13 +259,13 @@ namespace Nimble.Business.Library.Configuration
 
         public GenericConfiguration(XmlReader xmlReader)
         {
-            this.xmlReader = xmlReader;
             if (xmlReader == null) return;
-            ReadConfiguration();
+            ReadConfiguration(xmlReader);
             SetProperties();
+            xmlReader.Dispose();
         }
 
-        public virtual bool ReadNodes()
+        public virtual bool ReadNodes(XmlReader xmlReader)
         {
             return false;
         }

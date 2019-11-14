@@ -23,6 +23,8 @@ namespace Nimble.Business.Engine.Core
 
         public TimeSpan InactivityTimeout { get; set; }
 
+        public TimeSpan SaveTimeout { get; set; }
+
         public TimeSpan ScopeTimeout { get; set; }
 
         public TimeSpan LockTimeout { get; set; }
@@ -31,7 +33,7 @@ namespace Nimble.Business.Engine.Core
 
         public TimeSpan SqlCommandDelay { get; set; }
 
-        public string OpenTokens { get; set; }
+        public string OpenTokensPath { get; set; }
 
         #endregion Properties
 

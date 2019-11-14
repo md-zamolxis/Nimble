@@ -17,7 +17,7 @@ namespace Nimble.Setup.Install
 
         public ProjectInstaller()
         {
-            const string log = "Application";
+            const string log = "Nimble";
             var sources = new[]
             {
                 "Nimble.Server.Iis",

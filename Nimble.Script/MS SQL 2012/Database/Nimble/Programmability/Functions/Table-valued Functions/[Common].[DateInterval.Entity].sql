@@ -20,8 +20,9 @@ AS
 RETURN
 (
 	SELECT 
-		[Common].[DateTimeOffset.Entity](X.[Entity].query('DateFrom'))	[DateFrom],
-		[Common].[DateTimeOffset.Entity](X.[Entity].query('DateTo'))	[DateTo]
+		[Common].[DateTimeOffset.Entity](X.[Entity].query('DateTimeOffsetNow'))	[DateNow],
+		[Common].[DateTimeOffset.Entity](X.[Entity].query('DateFrom'))			[DateFrom],
+		[Common].[DateTimeOffset.Entity](X.[Entity].query('DateTo'))			[DateTo]
 	FROM @entity.nodes('/*') X ([Entity])
 )
 GO

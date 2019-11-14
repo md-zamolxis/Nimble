@@ -216,7 +216,7 @@ namespace Nimble.Business.Library.Configuration
         {
         }
 
-        public override bool ReadNodes()
+        public override bool ReadNodes(XmlReader xmlReader)
         {
             var found = false;
             switch (path)

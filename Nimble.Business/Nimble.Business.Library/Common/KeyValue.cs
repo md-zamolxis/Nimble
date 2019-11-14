@@ -163,6 +163,12 @@ namespace Nimble.Business.Library.Common
             return keyValues;
         }
 
+        public static string Find(KeyValue[] keyValues, string key, string value)
+        {
+            var keyValue = Find(keyValues, key);
+            return string.IsNullOrWhiteSpace(keyValue?.Value) ? value : keyValue.Value;
+        }
+
         #endregion Methods
 
         #endregion Public Members

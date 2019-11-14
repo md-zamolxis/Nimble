@@ -88,8 +88,7 @@ namespace Nimble.Business.Logic.Framework
             var branchIds = new Dictionary<Guid?, Branch>();
             foreach (var group in branches)
             {
-                if (group == null ||
-                    !group.Id.HasValue ||
+                if (!group.Id.HasValue ||
                     branchIds.ContainsKey(group.Id)) continue;
                 branchIds.Add(group.Id, group.Reduce<Branch>());
             }
@@ -117,8 +116,7 @@ namespace Nimble.Business.Logic.Framework
             var branchIds = new Dictionary<Guid?, Branch>();
             foreach (var branch in branches)
             {
-                if (branch == null ||
-                    !branch.Id.HasValue ||
+                if (!branch.Id.HasValue ||
                     branchIds.ContainsKey(branch.Id)) continue;
                 branchIds.Add(branch.Id, branch.Reduce<Branch>());
             }
@@ -146,8 +144,7 @@ namespace Nimble.Business.Logic.Framework
             var branchGroupIds = new Dictionary<Guid?, BranchGroup>();
             foreach (var branchGroup in branchGroups)
             {
-                if (branchGroup == null ||
-                    !branchGroup.Id.HasValue ||
+                if (!branchGroup.Id.HasValue ||
                     branchGroupIds.ContainsKey(branchGroup.Id)) continue;
                 branchGroupIds.Add(branchGroup.Id, branchGroup.Reduce<BranchGroup>());
             }
@@ -241,8 +238,7 @@ namespace Nimble.Business.Logic.Framework
             var postIds = new Dictionary<Guid?, Post>();
             foreach (var post in posts)
             {
-                if (post == null ||
-                    !post.Id.HasValue ||
+                if (!post.Id.HasValue ||
                     postIds.ContainsKey(post.Id)) continue;
                 postIds.Add(post.Id, post.Reduce<Post>());
             }
@@ -270,8 +266,7 @@ namespace Nimble.Business.Logic.Framework
             var postGroupIds = new Dictionary<Guid?, PostGroup>();
             foreach (var postGroup in postGroups)
             {
-                if (postGroup == null ||
-                    !postGroup.Id.HasValue ||
+                if (!postGroup.Id.HasValue ||
                     postGroupIds.ContainsKey(postGroup.Id)) continue;
                 postGroupIds.Add(postGroup.Id, postGroup.Reduce<PostGroup>());
             }

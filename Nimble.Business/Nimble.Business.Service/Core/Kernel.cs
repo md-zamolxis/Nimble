@@ -246,7 +246,7 @@ namespace Nimble.Business.Service.Core
         {
             if (ServerConfiguration != null) return;
             ServerConfiguration = new ServerConfiguration(XmlReader.Create(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile));
-            Logging = new Logging(ServerConfiguration.ApplicationEventLogSource);
+            Logging = new Logging(ServerConfiguration.EventLogSource, ServerConfiguration.EventLogName);
             Logging.Information("Service configuration loaded.");
             TypeDeclaratorManager = new TypeDeclaratorManager();
             Logging.Information("Type declarators manager loaded.");
@@ -259,11 +259,12 @@ namespace Nimble.Business.Service.Core
                     SessionContextType = ServerConfiguration.SessionContextType,
                     UseProcessToken = ServerConfiguration.UseProcessToken,
                     InactivityTimeout = TimeSpan.Parse(ServerConfiguration.SessionInactivityTimeout),
+                    SaveTimeout = TimeSpan.Parse(ServerConfiguration.SessionSaveTimeout),
                     ScopeTimeout = TimeSpan.Parse(ServerConfiguration.TransactionScopeTimeout),
                     LockTimeout = TimeSpan.Parse(ServerConfiguration.TransactionLockTimeout),
                     LockDelay = ServerConfiguration.TransactionLockDelay,
                     SqlCommandDelay = TimeSpan.Parse(ServerConfiguration.SqlCommandDelay),
-                    OpenTokens = ServerConfiguration.OpenTokens
+                    OpenTokensPath = ServerConfiguration.OpenTokensPath
                 },
                 new HttpContextAccessor()
             );
@@ -361,7 +362,6 @@ namespace Nimble.Business.Service.Core
 
         public void End()
         {
-            SessionManager.Save();
             Logging.Information("Unloading modules...");
             SessionManager = null;
             GenericCache = null;

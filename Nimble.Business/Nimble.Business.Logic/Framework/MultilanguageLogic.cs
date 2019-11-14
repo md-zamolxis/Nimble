@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using Hangfire;
 using Nimble.Business.Library.Common;
 using Nimble.Business.Library.DataAccess;
 using Nimble.Business.Library.Model;
@@ -48,6 +49,18 @@ namespace Nimble.Business.Logic.Framework
                     index = -1;
                 }
             }
+        }
+
+        private Resource ResourceCheck(Resource resource)
+        {
+            EntityPropertiesCheck(
+                resource,
+                "Code",
+                "Category");
+            EntityValidate(resource);
+            resource.Emplacement = EmplacementCheck(resource.Emplacement);
+            resource.Application = ApplicationCheck(resource.Application);
+            return resource;
         }
 
         #endregion Methods
@@ -137,16 +150,58 @@ namespace Nimble.Business.Logic.Framework
         public Resource ResourceRead(Resource resource)
         {
             var session = Kernel.Instance.SessionManager.SessionRead();
-            EntityPropertiesCheck(
-                resource,
-                "Code",
-                "Category");
-            EntityValidate(resource);
-            resource.SetDefaults();
-            resource.Emplacement = EmplacementCheck(resource.Emplacement);
-            resource.Application = ApplicationCheck(resource.Application);
+            ResourceCheck(resource);
+            return ResourceSave(resource, session.Token, session.HasTransactionScope());
+        }
+
+        public Resource ResourceUpdate(Resource resource)
+        {
+            ResourceCheck(resource);
+            resource.LastUsedOn = DateTimeOffset.Now;
+            return MultilanguageSql.Instance.ResourceUpdate(resource);
+        }
+
+        public bool ResourceDelete(Resource resource)
+        {
             var resourceEntity = MultilanguageSql.Instance.ResourceRead(resource);
-            if (!session.HasTransactionScope() &&
+            if (GenericEntity.HasValue(resourceEntity))
+            {
+                EmplacementCheck(resourceEntity.Emplacement);
+                ApplicationCheck(resourceEntity.Application);
+            }
+            return MultilanguageSql.Instance.ResourceDelete(resource);
+        }
+
+        public GenericOutput<Resource> ResourceSearch(ResourcePredicate resourcePredicate)
+        {
+            return MultilanguageSql.Instance.ResourceSearch(GenericInputCheck<Resource, ResourcePredicate>(resourcePredicate));
+        }
+
+        public Resource ResourceSave(Resource resource, Token token, bool hasTransactionScope)
+        {
+            resource.SetDefaults();
+            var resourceEntity = MultilanguageSql.Instance.ResourceRead(resource);
+            if (Kernel.Instance.ServerConfiguration.HangfireDisabled || 
+                hasTransactionScope ||
+                GenericEntity.HasValue(resourceEntity))
+            {
+                resourceEntity = ResourceSave(resource, resourceEntity, token, hasTransactionScope);
+            }
+            else
+            {
+                BackgroundJob.Enqueue(() => ResourceSave(resource, resourceEntity, token, hasTransactionScope, true));
+            }
+            return resourceEntity;
+        }
+
+        public Resource ResourceSave(Resource resource, Resource resourceEntity, Token token, bool hasTransactionScope, bool reread = false)
+        {
+            if (reread &&
+                !GenericEntity.HasValue(resourceEntity))
+            {
+                resourceEntity = MultilanguageSql.Instance.ResourceRead(resource);
+            }
+            if (!hasTransactionScope &&
                 resource.Application.IsAdministrative)
             {
                 if (!GenericEntity.HasValue(resourceEntity))
@@ -154,9 +209,9 @@ namespace Nimble.Business.Logic.Framework
                     resourceEntity = MultilanguageSql.Instance.ResourceCreate(resource);
                 }
                 else if (resourceEntity.LastUsedOn.HasValue &&
-                         resourceEntity.LastUsedOn.Value.AddDays(Kernel.Instance.ServerConfiguration.ResourceLastUsedLatencyDays) < session.Token.LastUsedOn)
+                         resourceEntity.LastUsedOn.Value.AddDays(Kernel.Instance.ServerConfiguration.ResourceLastUsedLatencyDays) < token.LastUsedOn)
                 {
-                    resourceEntity.LastUsedOn = session.Token.LastUsedOn;
+                    resourceEntity.LastUsedOn = token.LastUsedOn;
                     resourceEntity = MultilanguageSql.Instance.ResourceSave(resourceEntity);
                 }
             }
@@ -165,29 +220,6 @@ namespace Nimble.Business.Logic.Framework
                 resourceEntity = resource;
             }
             return resourceEntity;
-        }
-
-        public Resource ResourceUpdate(Resource resource)
-        {
-            EntityPropertiesCheck(
-                resource,
-                "Code",
-                "Category");
-            EntityValidate(resource);
-            resource.LastUsedOn = DateTimeOffset.Now;
-            ResourceRead(resource);
-            return MultilanguageSql.Instance.ResourceUpdate(resource);
-        }
-
-        public bool ResourceDelete(Resource resource)
-        {
-            ResourceRead(resource);
-            return MultilanguageSql.Instance.ResourceDelete(resource);
-        }
-
-        public GenericOutput<Resource> ResourceSearch(ResourcePredicate resourcePredicate)
-        {
-            return MultilanguageSql.Instance.ResourceSearch(GenericInputCheck<Resource, ResourcePredicate>(resourcePredicate));
         }
 
         #endregion Resource

@@ -31,7 +31,8 @@ namespace Nimble.Business.Service.Core
 
         #region Properties
 
-        private readonly object semaphore = new object();
+        private readonly object tokenSemaphore = new object();
+        private readonly object fileSemaphore = new object();
         private readonly Dictionary<string, Token> openTokens = new Dictionary<string, Token>();
         private readonly Dictionary<string, Token> lockTokens = new Dictionary<string, Token>();
         private readonly Dictionary<string, Session> openSessions = new Dictionary<string, Session>();
@@ -39,6 +40,11 @@ namespace Nimble.Business.Service.Core
         #endregion Properties
 
         #region Methods
+
+        private string OpenTokensPath(string code)
+        {
+            return string.Format(SessionContext.OpenTokensPath, EngineStatic.EncryptMd5(code));
+        }
 
         private bool LockDelete(string code)
         {
@@ -55,13 +61,17 @@ namespace Nimble.Business.Service.Core
         private bool TokenDelete(ICollection<string> codes)
         {
             var deleted = false;
-            if (codes.Count > 0)
+            foreach (var code in codes)
             {
-                foreach (var code in codes)
+                LockDelete(code);
+                deleted = openTokens.Remove(code);
+                ThreadPool.QueueUserWorkItem(delegate
                 {
-                    LockDelete(code);
-                    deleted = openTokens.Remove(code);
-                }
+                    lock (fileSemaphore)
+                    {
+                        File.Delete(OpenTokensPath(code));
+                    }
+                });
             }
             return deleted;
         }
@@ -77,25 +87,25 @@ namespace Nimble.Business.Service.Core
             switch (sessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    exists = OperationContext.Current != null;
-                    break;
-                }
+                    {
+                        exists = OperationContext.Current != null;
+                        break;
+                    }
                 case SessionContextType.Web:
-                {
-                    exists = HttpContext.Current != null && HttpContext.Current.Session != null;
-                    break;
-                }
+                    {
+                        exists = HttpContext.Current != null && HttpContext.Current.Session != null;
+                        break;
+                    }
                 case SessionContextType.Core:
-                {
-                    exists = HttpContextAccessor != null && HttpContextAccessor.HttpContext != null && HttpContextAccessor.HttpContext.Session != null;
-                    break;
-                }
+                    {
+                        exists = HttpContextAccessor != null && HttpContextAccessor.HttpContext != null && HttpContextAccessor.HttpContext.Session != null;
+                        break;
+                    }
                 default:
-                {
-                    exists = SessionContext.Session != null;
-                    break;
-                }
+                    {
+                        exists = SessionContext.Session != null;
+                        break;
+                    }
             }
             return exists;
         }
@@ -128,50 +138,33 @@ namespace Nimble.Business.Service.Core
             CustomMessageHeader = customMessageHeader;
             SessionContext = sessionContext;
             HttpContextAccessor = httpContextAccessor;
-            Load();
-        }
-
-        public void Load()
-        {
-            if (string.IsNullOrEmpty(SessionContext.OpenTokens)) return;
-            lock (semaphore)
+            if (!string.IsNullOrEmpty(SessionContext.OpenTokensPath))
             {
-                try
+                var directory = OpenTokensDirectory(SessionContext.OpenTokensPath);
+                if (!string.IsNullOrEmpty(directory) &&
+                    !Directory.Exists(directory))
                 {
-                    using (var streamReader = new StreamReader(SessionContext.OpenTokens))
-                    {
-                        var tokens = EngineStatic.JsonDeserialize<List<Token>>(streamReader.ReadToEnd());
-                        foreach (var token in tokens)
-                        {
-                            openTokens.Add(token.Code, token);
-                        }
-                        streamReader.Close();
-                    }
-                    Kernel.Instance.Logging.Information("[{0}] open tokens successfully loaded from [{1}].", openTokens.Count, SessionContext.OpenTokens);
-                }
-                catch (Exception exception)
-                {
-                    Kernel.Instance.Logging.Warning("Cannot load open tokens from [{0}] - see exception message [{1}].", SessionContext.OpenTokens, exception.Message);
+                    Directory.CreateDirectory(directory);
                 }
             }
         }
 
-        public void Save()
+        public static string OpenTokensDirectory(string openTokensPath)
         {
-            if (string.IsNullOrEmpty(SessionContext.OpenTokens)) return;
-            try
+            return Path.GetDirectoryName(string.Format(openTokensPath, Guid.NewGuid().ToString()));
+        }
+
+        public static void Clear()
+        {
+            var dateTimeOffsetNow = DateTimeOffset.Now;
+            var inactivityTimeout = TimeSpan.Parse(Kernel.Instance.ServerConfiguration.SessionInactivityTimeout);
+            var files = Directory.GetFiles(OpenTokensDirectory(Kernel.Instance.ServerConfiguration.OpenTokensPath));
+            foreach (var file in files)
             {
-                using (var streamWriter = new StreamWriter(SessionContext.OpenTokens, false))
+                if (File.GetLastWriteTime(file).Add(inactivityTimeout) < dateTimeOffsetNow)
                 {
-                    var tokens = new List<Token>(openTokens.Values);
-                    streamWriter.Write(EngineStatic.JsonSerialize(tokens));
-                    streamWriter.Close();
+                    File.Delete(file);
                 }
-                Kernel.Instance.Logging.Information("[{0}] open tokens successfully saved to [{1}].", openTokens.Count, SessionContext.OpenTokens);
-            }
-            catch (Exception exception)
-            {
-                Kernel.Instance.Logging.Warning("Cannot save open tokens from [{0}] - see exception message [{1}].", SessionContext.OpenTokens, exception.Message);
             }
         }
 
@@ -195,7 +188,7 @@ namespace Nimble.Business.Service.Core
             string headerValue = null;
             if (ContextExists())
             {
-                var httpRequestMessageProperty = (HttpRequestMessageProperty) OperationContext.Current.IncomingMessageProperties.Values.FirstOrDefault(item => item is HttpRequestMessageProperty);
+                var httpRequestMessageProperty = (HttpRequestMessageProperty)OperationContext.Current.IncomingMessageProperties.Values.FirstOrDefault(item => item is HttpRequestMessageProperty);
                 if (httpRequestMessageProperty != null)
                 {
                     headerValue = httpRequestMessageProperty.Headers[name];
@@ -210,62 +203,62 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (ContextExists())
                     {
-                        if (MessageHeaderIndex(CustomMessageHeader.EmplacementCode.Key) >= 0)
+                        if (ContextExists())
                         {
-                            emplacementCode = MessageHeaderValue(CustomMessageHeader.EmplacementCode.Key);
-                        }
-                        else
-                        {
-                            emplacementCode = HttpRequestHeaderValue(CustomMessageHeader.EmplacementCode.Key);
-                        }
-                        if (string.IsNullOrEmpty(emplacementCode))
-                        {
-                            var session = OperationContext.Current.Extensions.Find<Session>();
-                            if (session != null &&
-                                session.Token != null &&
-                                session.Token.Emplacement != null)
+                            if (MessageHeaderIndex(CustomMessageHeader.EmplacementCode.Key) >= 0)
                             {
-                                emplacementCode = session.Token.Emplacement.Code;
+                                emplacementCode = MessageHeaderValue(CustomMessageHeader.EmplacementCode.Key);
+                            }
+                            else
+                            {
+                                emplacementCode = HttpRequestHeaderValue(CustomMessageHeader.EmplacementCode.Key);
+                            }
+                            if (string.IsNullOrEmpty(emplacementCode))
+                            {
+                                var session = OperationContext.Current.Extensions.Find<Session>();
+                                if (session != null &&
+                                    session.Token != null &&
+                                    session.Token.Emplacement != null)
+                                {
+                                    emplacementCode = session.Token.Emplacement.Code;
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
                     {
-                        emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
+                        {
+                            emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Win:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
                     {
-                        emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
+                        {
+                            emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Silverlight:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
                     {
-                        emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
+                        {
+                            emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Core:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
                     {
-                        emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.EmplacementCode.Value))
+                        {
+                            emplacementCode = CustomMessageHeader.EmplacementCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
             }
             if (!ContextExists())
             {
@@ -284,62 +277,62 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (ContextExists())
                     {
-                        if (MessageHeaderIndex(CustomMessageHeader.ApplicationCode.Key) >= 0)
+                        if (ContextExists())
                         {
-                            applicationCode = MessageHeaderValue(CustomMessageHeader.ApplicationCode.Key);
-                        }
-                        else
-                        {
-                            applicationCode = HttpRequestHeaderValue(CustomMessageHeader.ApplicationCode.Key);
-                        }
-                        if (string.IsNullOrEmpty(applicationCode))
-                        {
-                            var session = OperationContext.Current.Extensions.Find<Session>();
-                            if (session != null &&
-                                session.Token != null &&
-                                session.Token.Application != null)
+                            if (MessageHeaderIndex(CustomMessageHeader.ApplicationCode.Key) >= 0)
                             {
-                                applicationCode = session.Token.Application.Code;
+                                applicationCode = MessageHeaderValue(CustomMessageHeader.ApplicationCode.Key);
+                            }
+                            else
+                            {
+                                applicationCode = HttpRequestHeaderValue(CustomMessageHeader.ApplicationCode.Key);
+                            }
+                            if (string.IsNullOrEmpty(applicationCode))
+                            {
+                                var session = OperationContext.Current.Extensions.Find<Session>();
+                                if (session != null &&
+                                    session.Token != null &&
+                                    session.Token.Application != null)
+                                {
+                                    applicationCode = session.Token.Application.Code;
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
                     {
-                        applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
+                        {
+                            applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Win:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
                     {
-                        applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
+                        {
+                            applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Silverlight:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
                     {
-                        applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
+                        {
+                            applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Core:
-                {
-                    if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
                     {
-                        applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        if (!string.IsNullOrEmpty(CustomMessageHeader.ApplicationCode.Value))
+                        {
+                            applicationCode = CustomMessageHeader.ApplicationCode.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
             }
             if (!ContextExists())
             {
@@ -358,49 +351,49 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (MessageHeaderIndex(CustomMessageHeader.TokenCode.Key) >= 0)
                     {
-                        tokenCode = MessageHeaderValue(CustomMessageHeader.TokenCode.Key);
+                        if (MessageHeaderIndex(CustomMessageHeader.TokenCode.Key) >= 0)
+                        {
+                            tokenCode = MessageHeaderValue(CustomMessageHeader.TokenCode.Key);
+                        }
+                        else
+                        {
+                            tokenCode = HttpRequestHeaderValue(CustomMessageHeader.TokenCode.Key);
+                        }
+                        break;
                     }
-                    else
-                    {
-                        tokenCode = HttpRequestHeaderValue(CustomMessageHeader.TokenCode.Key);
-                    }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    if (SessionObjects<string>.Object[Constants.SECURITY_SESSION_PATTERN] != null)
                     {
-                        tokenCode = SessionObjects<string>.Object[Constants.SECURITY_SESSION_PATTERN];
+                        if (SessionObjects<string>.Object[Constants.SECURITY_SESSION_PATTERN] != null)
+                        {
+                            tokenCode = SessionObjects<string>.Object[Constants.SECURITY_SESSION_PATTERN];
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Win:
-                {
-                    if (!string.IsNullOrEmpty(SessionContext.TokenCode))
                     {
-                        tokenCode = SessionContext.TokenCode;
+                        if (!string.IsNullOrEmpty(SessionContext.TokenCode))
+                        {
+                            tokenCode = SessionContext.TokenCode;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Silverlight:
-                {
-                    if (!string.IsNullOrEmpty(SessionContext.TokenCode))
                     {
-                        tokenCode = SessionContext.TokenCode;
+                        if (!string.IsNullOrEmpty(SessionContext.TokenCode))
+                        {
+                            tokenCode = SessionContext.TokenCode;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Core:
-                {
-                    if (ContextExists())
                     {
-                        tokenCode = HttpContextAccessor.HttpContext.Session.GetString(Constants.SECURITY_SESSION_PATTERN);
+                        if (ContextExists())
+                        {
+                            tokenCode = HttpContextAccessor.HttpContext.Session.GetString(Constants.SECURITY_SESSION_PATTERN);
+                        }
+                        break;
                     }
-                    break;
-                }
             }
             if (SessionContext.UseProcessToken)
             {
@@ -419,49 +412,49 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (MessageHeaderIndex(keyValuePair.Key) >= 0)
                     {
-                        value = MessageHeaderValue(keyValuePair.Key);
+                        if (MessageHeaderIndex(keyValuePair.Key) >= 0)
+                        {
+                            value = MessageHeaderValue(keyValuePair.Key);
+                        }
+                        else
+                        {
+                            value = HttpRequestHeaderValue(keyValuePair.Key);
+                        }
+                        break;
                     }
-                    else
-                    {
-                        value = HttpRequestHeaderValue(keyValuePair.Key);
-                    }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    if (!string.IsNullOrEmpty(keyValuePair.Value))
                     {
-                        value = keyValuePair.Value;
+                        if (!string.IsNullOrEmpty(keyValuePair.Value))
+                        {
+                            value = keyValuePair.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Win:
-                {
-                    if (!string.IsNullOrEmpty(keyValuePair.Value))
                     {
-                        value = keyValuePair.Value;
+                        if (!string.IsNullOrEmpty(keyValuePair.Value))
+                        {
+                            value = keyValuePair.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Silverlight:
-                {
-                    if (!string.IsNullOrEmpty(keyValuePair.Value))
                     {
-                        value = keyValuePair.Value;
+                        if (!string.IsNullOrEmpty(keyValuePair.Value))
+                        {
+                            value = keyValuePair.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Core:
-                {
-                    if (!string.IsNullOrEmpty(keyValuePair.Value))
                     {
-                        value = keyValuePair.Value;
+                        if (!string.IsNullOrEmpty(keyValuePair.Value))
+                        {
+                            value = keyValuePair.Value;
+                        }
+                        break;
                     }
-                    break;
-                }
             }
             return value;
         }
@@ -474,37 +467,37 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (ContextExists())
                     {
-                        session = OperationContext.Current.Extensions.Find<Session>();
+                        if (ContextExists())
+                        {
+                            session = OperationContext.Current.Extensions.Find<Session>();
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    session = SessionObjects<Session>.Current;
-                    break;
-                }
-                case SessionContextType.Win:
-                {
-                    session = SessionContext.Session;
-                    break;
-                }
-                case SessionContextType.Silverlight:
-                {
-                    session = SessionContext.Session;
-                    break;
-                }
-                case SessionContextType.Core:
-                {
-                    var key = typeof(Session).Name;
-                    if (HttpContextAccessor.HttpContext.Items.ContainsKey(key))
                     {
-                        session = (Session)HttpContextAccessor.HttpContext.Items[key];
+                        session = SessionObjects<Session>.Current;
+                        break;
                     }
-                    break;
-                }
+                case SessionContextType.Win:
+                    {
+                        session = SessionContext.Session;
+                        break;
+                    }
+                case SessionContextType.Silverlight:
+                    {
+                        session = SessionContext.Session;
+                        break;
+                    }
+                case SessionContextType.Core:
+                    {
+                        var key = typeof(Session).Name;
+                        if (HttpContextAccessor.HttpContext.Items.ContainsKey(key))
+                        {
+                            session = (Session)HttpContextAccessor.HttpContext.Items[key];
+                        }
+                        break;
+                    }
             }
             if (!ContextExists())
             {
@@ -538,49 +531,49 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (ContextExists())
                     {
-                        OperationContext.Current.Extensions.Clear();
-                        OperationContext.Current.Extensions.Add(session);
+                        if (ContextExists())
+                        {
+                            OperationContext.Current.Extensions.Clear();
+                            OperationContext.Current.Extensions.Add(session);
+                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    SessionObjects<Session>.Object[false] = session;
-                    break;
-                }
-                case SessionContextType.Win:
-                {
-                    SessionContext.Session = session;
-                    break;
-                }
-                case SessionContextType.Silverlight:
-                {
-                    SessionContext.Session = session;
-                    break;
-                }
-                case SessionContextType.Core:
-                {
-                    if (ContextExists())
                     {
-                        var key = typeof(Session).Name;
-                        if (HttpContextAccessor.HttpContext.Items.ContainsKey(key))
-                        {
-                            HttpContextAccessor.HttpContext.Items[key] = session;
-                        }
-                        else
-                        {
-                            HttpContextAccessor.HttpContext.Items.Add(key, session);
-                        }
+                        SessionObjects<Session>.Object[false] = session;
+                        break;
                     }
-                    break;
-                }
+                case SessionContextType.Win:
+                    {
+                        SessionContext.Session = session;
+                        break;
+                    }
+                case SessionContextType.Silverlight:
+                    {
+                        SessionContext.Session = session;
+                        break;
+                    }
+                case SessionContextType.Core:
+                    {
+                        if (ContextExists())
+                        {
+                            var key = typeof(Session).Name;
+                            if (HttpContextAccessor.HttpContext.Items.ContainsKey(key))
+                            {
+                                HttpContextAccessor.HttpContext.Items[key] = session;
+                            }
+                            else
+                            {
+                                HttpContextAccessor.HttpContext.Items.Add(key, session);
+                            }
+                        }
+                        break;
+                    }
             }
             if (!ContextExists())
             {
-                lock (semaphore)
+                lock (tokenSemaphore)
                 {
                     var tokenCode = ThreadId();
                     if (openSessions.ContainsKey(tokenCode))
@@ -620,75 +613,51 @@ namespace Nimble.Business.Service.Core
             switch (SessionContext.SessionContextType)
             {
                 case SessionContextType.Wcf:
-                {
-                    if (ContextExists())
                     {
-                        session = new Session();
-                        if (isAuthorized)
+                        if (ContextExists())
                         {
-                            session.Token.Id = Guid.NewGuid();
+                            session = new Session();
+                            if (isAuthorized)
+                            {
+                                session.Token.Id = Guid.NewGuid();
+                            }
+                            session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
+                            var remoteEndpointMessageProperty = (RemoteEndpointMessageProperty)OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name];
+                            session.Token.RequestHost = remoteEndpointMessageProperty.Address;
+                            session.Token.RequestPort = remoteEndpointMessageProperty.Port;
+                            var index = MessageHeaderIndex(CustomMessageHeader.TokenCode.Key);
+                            if (index >= 0)
+                            {
+                                OperationContext.Current.IncomingMessageHeaders.RemoveAt(index);
+                            }
+                            if (OperationContext.Current.IncomingMessageHeaders.MessageVersion.Envelope != EnvelopeVersion.None)
+                            {
+                                OperationContext.Current.IncomingMessageHeaders.Add((new MessageHeader<string>(session.Token.Code)).GetUntypedHeader(CustomMessageHeader.TokenCode.Key, CustomMessageHeader.Namespace));
+                            }
                         }
-                        session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
-                        var remoteEndpointMessageProperty = (RemoteEndpointMessageProperty) OperationContext.Current.IncomingMessageProperties[RemoteEndpointMessageProperty.Name];
-                        session.Token.RequestHost = remoteEndpointMessageProperty.Address;
-                        session.Token.RequestPort = remoteEndpointMessageProperty.Port;
-                        var index = MessageHeaderIndex(CustomMessageHeader.TokenCode.Key);
-                        if (index >= 0)
-                        {
-                            OperationContext.Current.IncomingMessageHeaders.RemoveAt(index);
-                        }
-                        if (OperationContext.Current.IncomingMessageHeaders.MessageVersion.Envelope != EnvelopeVersion.None)
-                        {
-                            OperationContext.Current.IncomingMessageHeaders.Add((new MessageHeader<string>(session.Token.Code)).GetUntypedHeader(CustomMessageHeader.TokenCode.Key, CustomMessageHeader.Namespace));
-                        }
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Web:
-                {
-                    if (ContextExists())
                     {
-                        session = new Session();
-                        if (isAuthorized)
+                        if (ContextExists())
                         {
-                            session.Token.Id = Guid.NewGuid();
+                            session = new Session();
+                            if (isAuthorized)
+                            {
+                                session.Token.Id = Guid.NewGuid();
+                            }
+                            session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
+                            session.Token.RequestHost = HttpContext.Current.Request.ServerVariables[Constants.FORWARDED_IP_ADDRESS];
+                            if (string.IsNullOrEmpty(session.Token.RequestHost))
+                            {
+                                session.Token.RequestHost = HttpContext.Current.Request.ServerVariables[Constants.REMOTE_IP_ADDRESS];
+                            }
+                            session.Token.RequestPort = int.Parse(HttpContext.Current.Request.ServerVariables[Constants.REMOTE_PORT]);
+                            SessionObjects<string>.Object[Constants.SECURITY_SESSION_PATTERN] = session.Token.Code;
                         }
-                        session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
-                        session.Token.RequestHost = HttpContext.Current.Request.ServerVariables[Constants.FORWARDED_IP_ADDRESS];
-                        if (string.IsNullOrEmpty(session.Token.RequestHost))
-                        {
-                            session.Token.RequestHost = HttpContext.Current.Request.ServerVariables[Constants.REMOTE_IP_ADDRESS];
-                        }
-                        session.Token.RequestPort = int.Parse(HttpContext.Current.Request.ServerVariables[Constants.REMOTE_PORT]);
-                        SessionObjects<string>.Object[Constants.SECURITY_SESSION_PATTERN] = session.Token.Code;
+                        break;
                     }
-                    break;
-                }
                 case SessionContextType.Win:
-                {
-                    session = new Session();
-                    if (isAuthorized)
-                    {
-                        session.Token.Id = Guid.NewGuid();
-                    }
-                    session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
-                    SessionContext.TokenCode = session.Token.Code;
-                    break;
-                }
-                case SessionContextType.Silverlight:
-                {
-                    session = new Session();
-                    if (isAuthorized)
-                    {
-                        session.Token.Id = Guid.NewGuid();
-                    }
-                    session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
-                    SessionContext.TokenCode = session.Token.Code;
-                    break;
-                }
-                case SessionContextType.Core:
-                {
-                    if (ContextExists())
                     {
                         session = new Session();
                         if (isAuthorized)
@@ -696,10 +665,34 @@ namespace Nimble.Business.Service.Core
                             session.Token.Id = Guid.NewGuid();
                         }
                         session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
-                        HttpContextAccessor.HttpContext.Session.SetString(Constants.SECURITY_SESSION_PATTERN, session.Token.Code);
+                        SessionContext.TokenCode = session.Token.Code;
+                        break;
                     }
-                    break;
-                }
+                case SessionContextType.Silverlight:
+                    {
+                        session = new Session();
+                        if (isAuthorized)
+                        {
+                            session.Token.Id = Guid.NewGuid();
+                        }
+                        session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
+                        SessionContext.TokenCode = session.Token.Code;
+                        break;
+                    }
+                case SessionContextType.Core:
+                    {
+                        if (ContextExists())
+                        {
+                            session = new Session();
+                            if (isAuthorized)
+                            {
+                                session.Token.Id = Guid.NewGuid();
+                            }
+                            session.Token.Code = string.Format(Constants.SECURITY_SESSION_PATTERN, EmplacementCode(), ApplicationCode(), session.Token.Id);
+                            HttpContextAccessor.HttpContext.Session.SetString(Constants.SECURITY_SESSION_PATTERN, session.Token.Code);
+                        }
+                        break;
+                    }
             }
             if (!ContextExists())
             {
@@ -727,26 +720,43 @@ namespace Nimble.Business.Service.Core
             if (session == null)
             {
                 var tokenCode = TokenCode();
-                if (!string.IsNullOrEmpty(tokenCode) &&
-                    openTokens.ContainsKey(tokenCode))
+                if (!string.IsNullOrEmpty(tokenCode))
                 {
-                    session = new Session
+                    lock (tokenSemaphore) 
                     {
-                        Token = openTokens[tokenCode]
-                    };
-                    var dateTimeOffsetNow = DateTimeOffset.Now;
-                    if (!session.Token.IsMaster() &&
-                        session.Token.LastUsedOn.Add(SessionContext.InactivityTimeout) < dateTimeOffsetNow)
-                    {
-                        openTokens.Remove(tokenCode);
-                        if (openSessions.ContainsKey(tokenCode))
+                        if (!openTokens.ContainsKey(tokenCode))
                         {
-                            openSessions.Remove(tokenCode);
+                            var openTokenPath = OpenTokensPath(tokenCode);
+                            if (File.Exists(OpenTokensPath(tokenCode)))
+                            {
+                                var token = EngineStatic.JsonDeserialize<Token>(File.ReadAllText(openTokenPath));
+                                openTokens.Add(tokenCode, token);
+                            }
                         }
-                        throw FaultExceptionDetail.Create(new FaultExceptionDetail(FaultExceptionDetailType.Expired));
                     }
-                    session.Token.LastUsedOn = dateTimeOffsetNow;
-                    SessionContextSet(session);
+                    if (openTokens.ContainsKey(tokenCode))
+                    {
+                        session = new Session
+                        {
+                            Token = openTokens[tokenCode]
+                        };
+                        var dateTimeOffsetNow = DateTimeOffset.Now;
+                        if (!session.Token.IsMaster() &&
+                            session.Token.LastUsedOn.Add(SessionContext.InactivityTimeout) < dateTimeOffsetNow)
+                        {
+                            TokenDelete(new List<string>
+                            {
+                                tokenCode
+                            });
+                            if (openSessions.ContainsKey(tokenCode))
+                            {
+                                openSessions.Remove(tokenCode);
+                            }
+                            throw FaultExceptionDetail.Create(new FaultExceptionDetail(FaultExceptionDetailType.Expired));
+                        }
+                        SessionUpdate(session);
+                        SessionContextSet(session);
+                    }
                 }
             }
             return session;
@@ -754,9 +764,10 @@ namespace Nimble.Business.Service.Core
 
         public Session SessionUpdate(Session session)
         {
-            lock (semaphore)
+            lock (tokenSemaphore)
             {
-                session.Token.LastUsedOn = DateTimeOffset.Now;
+                var dateTimeOffsetNow = DateTimeOffset.Now;
+                session.Token.LastUsedOn = dateTimeOffsetNow;
                 if (openTokens.ContainsKey(session.Token.Code))
                 {
                     openTokens[session.Token.Code] = session.Token;
@@ -765,13 +776,26 @@ namespace Nimble.Business.Service.Core
                 {
                     openTokens.Add(session.Token.Code, session.Token);
                 }
+                if (!session.Token.IsMaster() && (
+                    !session.Token.LastSavedOn.HasValue ||
+                    session.Token.LastSavedOn.Value.Add(SessionContext.SaveTimeout) < dateTimeOffsetNow))
+                {
+                    ThreadPool.QueueUserWorkItem(delegate
+                    {
+                        lock (fileSemaphore)
+                        {
+                            session.Token.LastSavedOn = dateTimeOffsetNow;
+                            File.WriteAllText(OpenTokensPath(session.Token.Code), EngineStatic.JsonSerialize(session.Token));
+                        }
+                    });
+                }
                 return session;
             }
         }
 
         public bool SessionDelete()
         {
-            lock (semaphore)
+            lock (tokenSemaphore)
             {
                 var deleted = false;
                 var tokenCode = TokenCode();
@@ -789,7 +813,7 @@ namespace Nimble.Business.Service.Core
 
         public void SessionClear(Session session)
         {
-            lock (semaphore)
+            lock (tokenSemaphore)
             {
                 var dateTimeOffsetNow = DateTimeOffset.Now;
                 var codes = new List<string>();
@@ -819,7 +843,7 @@ namespace Nimble.Business.Service.Core
 
         public bool TokenDelete(List<Token> items)
         {
-            lock (semaphore)
+            lock (tokenSemaphore)
             {
                 var tokenCode = TokenCode();
                 var codes = new List<string>();
@@ -849,7 +873,7 @@ namespace Nimble.Business.Service.Core
 
         #region Lock
 
-        public bool LockCreate(Session session, string[] connectionStrings, List<LockType> lockTypes)
+        public bool LockCreate(Session session, string[] connectionStrings, List<LockType> lockTypes, bool checkOrganisation)
         {
             var saved = true;
             var tokenLocks = new List<string>();
@@ -870,7 +894,7 @@ namespace Nimble.Business.Service.Core
                 var dateTimeOffset = DateTimeOffset.Now.Add(SessionContext.LockTimeout);
                 while (saved)
                 {
-                    lock (semaphore)
+                    lock (tokenSemaphore)
                     {
                         if (session.Token.Locks == null)
                         {
@@ -878,7 +902,8 @@ namespace Nimble.Business.Service.Core
                             {
                                 if (lockToken.Value.Locks == null ||
                                     lockToken.Value.Locks.Count == 0) continue;
-                                if (session.Token.Employees != null && 
+                                if (checkOrganisation &&
+                                    session.Token.Employees != null &&
                                     lockToken.Value.Employees != null)
                                 {
                                     var other = true;
@@ -916,7 +941,7 @@ namespace Nimble.Business.Service.Core
                             session.TransactionScope = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions
                             {
                                 Timeout = SessionContext.ScopeTimeout,
-                                IsolationLevel = IsolationLevel.Snapshot
+                                IsolationLevel = IsolationLevel.ReadCommitted
                             });
                             if (session.SqlConnections == null)
                             {
@@ -943,7 +968,7 @@ namespace Nimble.Business.Service.Core
 
         public bool LockDelete(Session session, bool isCompleted)
         {
-            lock (semaphore)
+            lock (tokenSemaphore)
             {
                 if (session.TransactionScope != null)
                 {
@@ -972,7 +997,7 @@ namespace Nimble.Business.Service.Core
 
         public bool LockDelete(Token token)
         {
-            lock (semaphore)
+            lock (tokenSemaphore)
             {
                 return LockDelete(token.Code);
             }
